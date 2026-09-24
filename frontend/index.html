@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matrubhasa AI — AI Vernacular Pedagogy & Real-Time Translation (SIH26042)</title>
+  <meta name="description" content="AI-Powered Vernacular Pedagogy and Real-Time Translation Tool for Mother Tongue-Based Primary Education — Government of Jharkhand & SIH 2026." />
+  
+  <!-- Preconnect and Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@500;700&family=Noto+Sans+Devanagari:wght@500;700&family=Noto+Sans+Ol+Chiki:wght@500;700&family=Noto+Sans+Oriya:wght@500;700&display=swap" rel="stylesheet">
+  
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Confetti Canvas for Kid Celebrations -->
+  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+
+  <!-- ====================================================================
+       REAL-TIME EMAIL AUTHENTICATION MODAL (TEACHER & STUDENT PORTAL)
+       ==================================================================== -->
+  <div id="authModal" class="auth-modal-overlay">
+    <div class="auth-card">
+      <!-- High-Visibility Pre-Login Mother Tongue Switcher -->
+      <div class="auth-lang-banner">
+        <div class="auth-lang-header">
+          <span class="auth-lang-icon">🌐</span>
+          <div class="auth-lang-title-wrap">
+            <strong class="auth-lang-label" data-i18n="auth_choose_lang_title">🌐 अपनी मातृभाषा चुनें / Select Your Mother Tongue:</strong>
+            <span class="auth-lang-sub" data-i18n="auth_choose_lang_sub">ᱥᱟᱱᱛᱟᱲᱤ • ᱦᱳ • मुंडारी • कुड़ुख़ • खोरठा • नागपुरी • हिन्दी • বাংলা • ଓଡ଼ିଆ • English</span>
+          </div>
+        </div>
+        <div class="auth-lang-chips" id="authLangChips">
+          <button type="button" class="auth-lang-chip active" data-lang="sat">🌿 ᱥᱟᱱᱛᱟᱲᱤ (Santali)</button>
+          <button type="button" class="auth-lang-chip" data-lang="ho">🏹 ᱦᱳ (Ho)</button>
+          <button type="button" class="auth-lang-chip" data-lang="unr">🌾 मुंडारी (Mundari)</button>
+          <button type="button" class="auth-lang-chip" data-lang="kru">🍃 कुड़ुख़ (Kurukh)</button>
+          <button type="button" class="auth-lang-chip" data-lang="khr">🌄 खोरठा (Khortha)</button>
+          <button type="button" class="auth-lang-chip" data-lang="sck">🌺 नागपुरी (Nagpuri)</button>
+          <button type="button" class="auth-lang-chip" data-lang="hi">🇮🇳 हिन्दी (Hindi)</button>
+          <button type="button" class="auth-lang-chip" data-lang="bn">🌸 বাংলা (Bengali)</button>
+          <button type="button" class="auth-lang-chip" data-lang="or">☀️ ଓଡ଼ିଆ (Odia)</button>
+          <button type="button" class="auth-lang-chip" data-lang="en">🌐 English</button>
+        </div>
+      </div>
+
+      <div class="auth-header">
+        <div class="auth-brand-logo">भ</div>
+        <h2>मातृभाषा AI <span>• Matrubhasa</span></h2>
+        <p class="auth-subtitle">AI-Powered Vernacular Pedagogy • Smart India Hackathon (SIH26042)</p>
+        <span class="auth-team-badge">Innovated by Team <strong>MATRUSETU</strong></span>
+      </div>
+
+      <!-- Role Selection Segmented Control -->
+      <div class="auth-role-tabs">
+        <button type="button" class="role-tab active" data-role="teacher">
+          <span class="role-icon">👨‍🏫</span>
+          <span data-i18n="role_teacher">शिक्षक (Teacher)</span>
+        </button>
+        <button type="button" class="role-tab" data-role="student">
+          <span class="role-icon">🎒</span>
+          <span data-i18n="role_student">विद्यार्थी (Student)</span>
+        </button>
+        <button type="button" class="role-tab" data-role="parent">
+          <span class="role-icon">👨‍👩‍👦</span>
+          <span data-i18n="role_parent">अभिभावक (Parent)</span>
+        </button>
+      </div>
+
+      <!-- Real-Time Email Auth Form -->
+      <form id="authForm" class="auth-form" onsubmit="return false;">
+        <div class="form-group">
+          <label class="form-label" for="authNameInput" data-i18n="auth_name_label">Full Name (नाम):</label>
+          <input type="text" id="authNameInput" class="input-text" placeholder="e.g. Rajesh Kumar / Ananya Soren / Malti Devi" value="Shri Rajesh Kumar" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="authEmailInput" data-i18n="auth_email_label">Official Email Address (ईमेल पता):</label>
+          <div class="email-input-wrap">
+            <input type="email" id="authEmailInput" class="input-text" placeholder="e.g. teacher@jharkhand.gov.in" value="teacher@jharkhand.gov.in" required />
+            <button type="button" id="authSendOtpBtn" class="btn-otp-action">
+              <span data-i18n="auth_send_otp">Send OTP 📨</span>
+            </button>
+          </div>
+          <div class="otp-timer-status" id="otpTimerStatus">Click "Send OTP" to receive a real-time verification code.</div>
+        </div>
+
+        <!-- Real-Time Simulated Email Notification Toast -->
+        <div id="authMailNotification" class="auth-mail-notification" style="display:none;">
+          <div class="mail-icon">📬</div>
+          <div class="mail-text">
+            <strong>Real-Time Mailbox:</strong> Verification code sent to <span id="authNotifEmail"></span>!
+            <div class="otp-highlight">Code: <span id="authSentCode">7429</span> <button type="button" id="btnAutoFillOtp" class="btn-autofill-otp">⚡ Auto-Fill</button></div>
+          </div>
+        </div>
+
+        <!-- 4-Digit OTP Code Input -->
+        <div class="form-group" id="otpGroup" style="margin-top: 14px;">
+          <label class="form-label" data-i18n="auth_enter_otp_label">Enter 4-Digit Real-Time OTP (ओ.टी.पी दर्ज करें):</label>
+          <div class="otp-digits-container">
+            <input type="text" class="otp-box" maxlength="1" id="otp1" inputmode="numeric" />
+            <input type="text" class="otp-box" maxlength="1" id="otp2" inputmode="numeric" />
+            <input type="text" class="otp-box" maxlength="1" id="otp3" inputmode="numeric" />
+            <input type="text" class="otp-box" maxlength="1" id="otp4" inputmode="numeric" />
+          </div>
+        </div>
+
+        <button type="button" id="authSubmitBtn" class="btn-auth-submit">
+          <span data-i18n="auth_verify_btn">🔐 Verify & Enter Matrubhasa (सत्यापित करें)</span>
+          <span class="btn-arrow">➔</span>
+        </button>
+      </form>
+
+      <!-- Quick 1-Tap Demo Access (Crucial for live presentations) -->
+      <div class="auth-demo-divider">
+        <span data-i18n="demo_divider">⚡ OR QUICK 1-TAP DEMO ACCESS</span>
+      </div>
+
+      <div class="auth-demo-buttons auth-demo-three">
+        <button type="button" id="demoTeacherBtn" class="btn-demo-quick teacher-demo">
+          <span class="demo-icon">👨‍🏫</span>
+          <div class="demo-info">
+            <strong data-i18n="demo_teacher_title">Demo as Teacher (शिक्षक)</strong>
+            <span>Shri Rajesh Kumar • Class 1-5 In-Charge</span>
+          </div>
+        </button>
+        <button type="button" id="demoStudentBtn" class="btn-demo-quick student-demo">
+          <span class="demo-icon">🎒</span>
+          <div class="demo-info">
+            <strong data-i18n="demo_student_title">Demo as Student (विद्यार्थी)</strong>
+            <span>Ananya Soren • Class 3 • Santali/Hindi</span>
+          </div>
+        </button>
+        <button type="button" id="demoParentBtn" class="btn-demo-quick parent-demo">
+          <span class="demo-icon">👨‍👩‍👦</span>
+          <div class="demo-info">
+            <strong data-i18n="demo_parent_title">Demo as Parent (अभिभावक)</strong>
+            <span data-i18n="demo_parent_sub">Smt. Malti Devi • Class 3 Parent • Santali/Mundari</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="auth-footer-notice">
+        <span>🔒 100% Secure & Functional in Gaon Offline Mode with Local Cache</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       CINEMATIC "WELCOME TO THE MATRUBHASA" ENTRANCE EXPERIENCE
+       ==================================================================== -->
+  <div id="cinematicWelcomeOverlay" class="cinematic-overlay" style="display:none;">
+    <div class="cinematic-backdrop-glow"></div>
+    <div class="cinematic-particles"></div>
+
+    <div class="cinematic-content">
+      <!-- Animated Floating Tribal Ring & Logo -->
+      <div class="cinematic-ring-container">
+        <div class="cinematic-mandala-ring"></div>
+        <div class="cinematic-mandala-ring-inner"></div>
+        <div class="cinematic-logo-badge">भ</div>
+      </div>
+
+      <!-- Cinematic 3D Glowing Title -->
+      <div class="cinematic-title-box">
+        <div class="cinematic-prefix">✨ WELCOME TO THE ✨</div>
+        <h1 class="cinematic-glow-title">MATRUBHASA</h1>
+        <div class="cinematic-vernacular-title">मातृभाषा सेतु</div>
+      </div>
+
+      <!-- Subtitles and Team Attribution -->
+      <div class="cinematic-team-badge">
+        <span>Architected by Team <strong>MATRUSETU</strong></span>
+      </div>
+      <p class="cinematic-tagline">AI-Powered Vernacular Pedagogy & Classroom Voice Bridge for Mother Tongues</p>
+
+      <!-- Personalized Dynamic User Greeting -->
+      <div class="cinematic-greeting-card">
+        <div class="cinematic-mascot">🐘</div>
+        <div class="cinematic-greeting-text">
+          <strong id="cinematicUserName">नमस्ते श्री राजेश कुमार जी!</strong>
+          <span id="cinematicUserMsg">आपका कक्षा सेतु तैयार है। आइये मातृभाषा में शिक्षा को जीवंत बनाएं।</span>
+        </div>
+      </div>
+
+      <!-- Dynamic Audio Waveform Visualizer simulation -->
+      <div class="cinematic-soundwaves">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <!-- Cinematic Quick Mother Tongue Switcher -->
+      <div class="cinematic-lang-strip">
+        <span class="cinematic-lang-label">🌐 Mother Tongue / मातृभाषा:</span>
+        <div class="cinematic-lang-chips" id="cinematicLangChips">
+          <button type="button" class="cinematic-chip active" data-lang="sat">🌿 ᱥᱟᱱᱛᱟᱲᱤ</button>
+          <button type="button" class="cinematic-chip" data-lang="ho">🏹 ᱦᱳ</button>
+          <button type="button" class="cinematic-chip" data-lang="unr">🌾 मुंडारी</button>
+          <button type="button" class="cinematic-chip" data-lang="kru">🍃 कुड़ुख़</button>
+          <button type="button" class="cinematic-chip" data-lang="khr">🌄 खोरठा</button>
+          <button type="button" class="cinematic-chip" data-lang="sck">🌺 नागपुरी</button>
+          <button type="button" class="cinematic-chip" data-lang="hi">🇮🇳 हिन्दी</button>
+          <button type="button" class="cinematic-chip" data-lang="bn">🌸 বাংলা</button>
+          <button type="button" class="cinematic-chip" data-lang="or">☀️ ଓଡ଼ିଆ</button>
+          <button type="button" class="cinematic-chip" data-lang="en">🌐 English</button>
+        </div>
+      </div>
+
+      <!-- Skip / Proceed Button & Progress bar -->
+      <div class="cinematic-actions">
+        <button id="cinematicProceedBtn" class="btn-cinematic-proceed">
+          <span>Enter Dashboard (डैशबोर्ड में प्रवेश करें)</span>
+          <span class="btn-arrow">➔</span>
+        </button>
+        <div class="cinematic-progress-wrap">
+          <div id="cinematicProgressBar" class="cinematic-progress-bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Government & SIH Authority Ribbon -->
+  <aside class="gov-ribbon">
+    <div class="gov-ribbon-left">
+      <span data-i18n="gov_authority">🇮🇳 Smart India Hackathon 2026</span>
+      <span>•</span>
+      <span class="gov-badge">Problem ID: SIH26042</span>
+      <span>•</span>
+      <span>Govt. of Jharkhand — Dept. of School Education</span>
+      <span>•</span>
+      <span data-i18n="nep_aligned">NEP 2020 & NIPUN Bharat Aligned</span>
+    </div>
+    <div class="gov-ribbon-right">
+      <!-- Persistent Global Mother Tongue Switcher Pill -->
+      <button type="button" id="govLangSwitchBtn" class="gov-lang-pill" title="Choose Mother Tongue / अपनी मातृभाषा चुनें">
+        <span class="gov-lang-icon">🌐</span>
+        <span class="gov-lang-badge" id="govCurrentLangTag">ᱥᱟᱱᱛᱟᱲᱤ (Santali)</span>
+        <span class="gov-lang-arrow">▾</span>
+      </button>
+
+      <span class="gov-badge" data-i18n="bhashini_powered">Bhashini (NLTM) Powered</span>
+      <div id="networkPill" class="network-pill online" title="Click to toggle simulated Gaon Offline Mode">
+        <span class="pulse-dot"></span>
+        <span id="networkPillText">Bhashini Cloud Connected</span>
+      </div>
+      <div id="userProfilePill" class="user-profile-pill">
+        <span class="user-role-badge" id="headerRoleBadge">👨‍🏫 Teacher</span>
+        <span class="user-name" id="headerUserName">Shri Rajesh Kumar</span>
+        <button type="button" id="serverSettingsBtn" class="auth-pill-btn" title="Configure Backend API Server URL">⚙️ API Server</button>
+        <button id="authTriggerBtn" class="auth-pill-btn" title="Switch User or Logout">🔄 Logout</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Insecure Microphone Diagnostic Warning Banner (shown only on HTTP non-localhost) -->
+  <div id="insecureMicBanner" class="insecure-mic-banner" style="display: none;">
+    <div class="banner-content">
+      <span class="banner-icon">⚠️</span>
+      <div class="banner-text">
+        <strong>Hardware Microphone Requires HTTPS or localhost:</strong>
+        <span> You are accessing via plain HTTP (<code>http://...</code>). Browsers strictly disable microphone input on insecure origins. For live speech to work on mobile/LAN, open via <strong>HTTPS</strong> or on <strong>localhost</strong>, or whitelist in <code>chrome://flags/#unsafely-treat-insecure-origin-as-secure</code>.</span>
+      </div>
+      <button type="button" id="dismissMicBannerBtn" class="btn-dismiss-banner" title="Dismiss">✕</button>
+    </div>
+  </div>
+
+  <!-- Hero Header with Mascot -->
+  <header class="hero-header">
+    <div class="hero-content">
+      <div class="brand-group">
+        <div class="brand-icon" aria-label="Logo">भ</div>
+        <div class="brand-text">
+          <h1 data-i18n="hero_title">मातृभाषा AI <span>• Matrubhasa</span></h1>
+          <div class="creator-badge">
+            <span>✨</span> Matrubhasa by <strong>Team MATRUSETU</strong> <span class="creator-role">(Lead Innovation Team)</span>
+          </div>
+          <p data-i18n="hero_subtitle">AI-Powered Vernacular Pedagogy & Real-Time Classroom Translation for Primary Education</p>
+        </div>
+      </div>
+      <div class="mascot-badge">
+        <div class="mascot-avatar">🐘</div>
+        <div class="mascot-bubble">
+          <strong>गज्जू भाई (Gajju Bhai)</strong>
+          <span data-i18n="mascot_speech">आपका बाल मित्र एवं भाषा साथी!</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Joyful Government & Child Navigation Tabs -->
+  <nav class="tabs-nav" aria-label="Primary Modules">
+    <div class="tabs-container">
+      <button class="tab-btn active" data-target="viewDashboard">
+        <span class="tab-icon">🏠</span>
+        <span data-i18n="tab_dashboard">Dashboard (डैशबोर्ड)</span>
+        <span class="tab-badge" style="background:#10B981">Home</span>
+      </button>
+      <button class="tab-btn" data-target="viewLiveBridge">
+        <span class="tab-icon">🎙️</span>
+        <span data-i18n="tab_live">Classroom Live Bridge (कक्षा सेतु)</span>
+        <span class="tab-badge">Real-Time</span>
+      </button>
+      <button class="tab-btn" data-target="viewPathshala">
+        <span class="tab-icon">📖</span>
+        <span data-i18n="tab_pathshala">Pathshala Lens (पाठशाला लेन्स)</span>
+      </button>
+      <button class="tab-btn" data-target="viewBalVatika">
+        <span class="tab-icon">🐘</span>
+        <span data-i18n="tab_balvatika">Bhasha Mitr (बाल वाटिका)</span>
+        <span class="tab-badge" style="background:#F59E0B">NIPUN FLN</span>
+      </button>
+      <button class="tab-btn" data-target="viewNotebooks">
+        <span class="tab-icon">📚</span>
+        <span data-i18n="tab_books">JCERT/NCERT Books (ई-पुस्तकालय)</span>
+        <span class="tab-badge" style="background:#0284C7">कक्षा १-५ Offline</span>
+      </button>
+      <button class="tab-btn" data-target="viewAkshar">
+        <span class="tab-icon">🔤</span>
+        <span data-i18n="tab_akshar">Akshar Mala (अक्षर व ध्वनि)</span>
+      </button>
+      <button class="tab-btn" data-target="viewTeacherHub">
+        <span class="tab-icon">📊</span>
+        <span data-i18n="tab_hub">Sikshak & Parent Hub (शिक्षक मंच)</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Application Wrapper -->
+  <main class="main-wrapper">
+
+    <!-- ====================================================================
+         TAB 0: BEAUTIFUL & SIMPLE UNIFIED DASHBOARD (TEACHER & STUDENT)
+         ==================================================================== -->
+    <section id="viewDashboard" class="tab-view active-view">
+      <!-- Dashboard Hero Greeting Banner -->
+      <div class="dashboard-hero">
+        <div class="dashboard-hero-left">
+          <div class="dashboard-avatar" id="dashAvatar">👨‍🏫</div>
+          <div class="dashboard-user-meta">
+            <div class="dash-badge-row">
+              <span class="dash-role-badge" id="dashRoleBadge">👨‍🏫 Teacher In-Charge</span>
+              <span class="dash-school-badge">📍 राजकीय प्राथमिक विद्यालय, राँची (Govt. Primary School)</span>
+              <span class="dash-online-status">🟢 Bhashini Cloud Active</span>
+            </div>
+            <h2 id="dashGreetingTitle">जोहार & नमस्ते, राजेश जी!</h2>
+            <p id="dashGreetingDesc">मातृभाषा AI में आपका स्वागत है। यहाँ से आप कक्षा सेतु, भाषा मित्र, एवं शिक्षण सामग्री को एक क्लिक में चला सकते हैं।</p>
+          </div>
+        </div>
+        <div class="dashboard-hero-right">
+          <button id="dashSwitchRoleBtn" class="btn-dash-switch" title="Switch between Teacher, Student and Parent view">
+            <span data-i18n="dash_switch_role">🔄 Switch Mode (शिक्षक / विद्यार्थी / अभिभावक)</span>
+          </button>
+          <button id="dashChangeLangBtn" class="btn-dash-lang" title="Change Mother Tongue at any time">
+            <span data-i18n="dash_change_lang">🌐 Change Language (मातृभाषा बदलें)</span>
+          </button>
+          <button id="dashReplayCinematicBtn" class="btn-dash-replay" title="Replay the cinematic welcome animation">
+            <span>✨ Replay Intro</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Simple, High-Contrast FLN & Classroom Progress Widgets -->
+      <div class="dashboard-stats-grid">
+        <div class="dash-stat-card streak-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-content">
+            <span class="stat-number">7 Days</span>
+            <span class="stat-label">Daily Streak (दैनिक अभ्यास)</span>
+            <span class="stat-sub">Active in Classroom Today</span>
+          </div>
+        </div>
+
+        <div class="dash-stat-card lang-card">
+          <div class="stat-icon">🗣️</div>
+          <div class="stat-content">
+            <span class="stat-number">10 Languages</span>
+            <span class="stat-label">Vernacular Tongues (मातृभाषाएं)</span>
+            <span class="stat-sub">Santali, Ho, Mundari, Kurukh...</span>
+          </div>
+        </div>
+
+        <div class="dash-stat-card fln-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-content">
+            <span class="stat-number" id="dashStarsCount">24 Stars</span>
+            <span class="stat-label">Bhasha Mitr FLN (निपुण सितारे)</span>
+            <span class="stat-sub">Reading Aloud Mastery</span>
+          </div>
+        </div>
+
+        <div class="dash-stat-card library-card">
+          <div class="stat-icon">📚</div>
+          <div class="stat-content">
+            <span class="stat-number">45+ Lessons</span>
+            <span class="stat-label">JCERT/NCERT Offline (पाठ्य सामग्री)</span>
+            <span class="stat-sub">Grade 1-5 Books Ready</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEDICATED PARENT CONNECT HUB (Displayed prominently for Parents) -->
+      <div id="dashParentHubSection" class="dash-parent-hub" style="display: none;">
+        <div class="parent-hub-header">
+          <div class="parent-hub-title-box">
+            <span class="parent-hub-icon">📱</span>
+            <div>
+              <h3 data-i18n="parent_portal_title">📱 मातृ-संदेश: अभिभावक दैनिक वाक् संदेश (Parent Vernacular Connect)</h3>
+              <p data-i18n="parent_portal_desc">गाँव के अभिभावक अपने बच्चे की दैनिक स्कूल प्रगति व गृहकार्य 30-सेकंड की मातृभाषा ऑडियो में सुनें और बच्चे का मार्गदर्शन करें।</p>
+            </div>
+          </div>
+          <div class="parent-badge-pill">
+            <span class="pulse-dot"></span>
+            <span>Live School Daily Audio</span>
+          </div>
+        </div>
+
+        <div class="parent-cards-grid">
+          <!-- Card 1: Today's Matru-Sandesh Audio Player -->
+          <div class="parent-feature-card">
+            <div class="parent-card-header">
+              <span class="p-card-icon">🔊</span>
+              <div>
+                <strong>Today's 30-Sec Classroom Audio (आज का संदेश)</strong>
+                <span class="p-card-sub" id="parentAudioLangBadge">Spoken in: ᱥᱟᱱᱛᱟᱲᱤ (Santali)</span>
+              </div>
+            </div>
+            <div class="parent-audio-box">
+              <div class="parent-speaker-visual">
+                <span class="speaker-wave">📢</span>
+                <p id="parentTodaySummaryText">"नमस्ते अभिभावक जी! आज कक्षा 3 में आपके बच्चे ने 'पौधों को धूप और पानी की जरूरत' विषय पर सीखा। घर पर बच्चे से इस बारे में पूछें और उसकी प्रशंसा करें!"</p>
+              </div>
+              <div class="parent-audio-controls">
+                <button type="button" id="btnPlayDashParentAudio" class="btn-parent-play">
+                  <span class="play-icon">▶️</span>
+                  <span id="btnPlayDashParentAudioText" data-i18n="parent_listen_audio_btn">🔊 आज का 30-सेकंड मातृभाषा संदेश सुनें</span>
+                </button>
+                <button type="button" id="btnSwitchParentLang" class="btn-parent-lang-switch" title="Change Mother Tongue for Parent Audio">
+                  <span>🌐 बोली बदलें (Change Tongue)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Child's Reading Progress & FLN Stars -->
+          <div class="parent-feature-card">
+            <div class="parent-card-header">
+              <span class="p-card-icon">⭐</span>
+              <div>
+                <strong data-i18n="parent_stars_title">⭐ आपके बच्चे के अध्ययन सितारे (Child Reading Stars):</strong>
+                <span class="p-card-sub">Student: Ananya Soren • Grade 3</span>
+              </div>
+            </div>
+            <div class="parent-stars-summary">
+              <div class="stars-badge-row">
+                <div class="parent-big-stat">
+                  <span class="big-num" id="parentStarsCount">24</span>
+                  <span class="big-lbl">⭐ NIPUN Stars</span>
+                </div>
+                <div class="parent-big-stat">
+                  <span class="big-num">94%</span>
+                  <span class="big-lbl">🎯 Fluency Score</span>
+                </div>
+                <div class="parent-big-stat">
+                  <span class="big-num">12</span>
+                  <span class="big-lbl">🌿 Ol Chiki Words</span>
+                </div>
+              </div>
+              <p class="parent-praise-msg">🎉 <em>"अनन्या ने आज संथाली एवं हिन्दी में बहुत आत्मविश्वास के साथ नए शब्द बोले! बहुत खूब!"</em></p>
+              <button type="button" id="btnParentAskTeacher" class="btn-parent-ask">
+                <span data-i18n="parent_ask_teacher_btn">🎙️ शिक्षक को अपनी मातृभाषा में संदेश भेजें (Voice Question)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Modules Section (Simple & Highly Visual) -->
+      <div class="dashboard-section-header">
+        <div>
+          <h3 data-i18n="dash_quick_modules">🚀 Quick Access Modules (मुख्य शिक्षण व अध्ययन केंद्र)</h3>
+          <p>Click any card below to launch the tool directly:</p>
+        </div>
+      </div>
+
+      <div class="dashboard-modules-grid">
+        <!-- Module 1: Live Bridge -->
+        <div class="module-card card-live" data-nav="viewLiveBridge">
+          <div class="module-card-top">
+            <span class="module-emoji">🎙️</span>
+            <span class="module-tag tag-live">Real-Time Voice</span>
+          </div>
+          <h4>Classroom Live Bridge (कक्षा सेतु)</h4>
+          <p>Teacher speaks in Hindi/English; app translates instantly into Santali, Ho, Mundari with 0.85x child speech playback.</p>
+          <div class="module-footer">
+            <span class="module-action-btn">Open Live Mic ➔</span>
+          </div>
+        </div>
+
+        <!-- Module 2: Bhasha Mitr -->
+        <div class="module-card card-fln" data-nav="viewBalVatika">
+          <div class="module-card-top">
+            <span class="module-emoji">🐘</span>
+            <span class="module-tag tag-fln">NIPUN Bharat FLN</span>
+          </div>
+          <h4>Bhasha Mitr — Bal Vatika (भाषा मित्र)</h4>
+          <p>Reading coach with Gajju Bhai! Children read aloud; words turn green in real-time with confetti & 3-star celebrations.</p>
+          <div class="module-footer">
+            <span class="module-action-btn">Play & Read Aloud ➔</span>
+          </div>
+        </div>
+
+        <!-- Module 3: Pathshala Lens -->
+        <div class="module-card card-pathshala" data-nav="viewPathshala">
+          <div class="module-card-top">
+            <span class="module-emoji">📖</span>
+            <span class="module-tag tag-pedagogy">Desi Kahani & PDF</span>
+          </div>
+          <h4>Pathshala Lens (पाठशाला लेन्स)</h4>
+          <p>Transform dry textbook definitions into relatable folk stories ("Chintu Patta") and 1-click printable bilingual worksheets.</p>
+          <div class="module-footer">
+            <span class="module-action-btn">Create Story & Worksheets ➔</span>
+          </div>
+        </div>
+
+        <!-- Module 4: Digital Books -->
+        <div class="module-card card-books" data-nav="viewNotebooks">
+          <div class="module-card-top">
+            <span class="module-emoji">📚</span>
+            <span class="module-tag tag-offline">Class 1-5 Offline</span>
+          </div>
+          <h4>JCERT / NCERT Library (ई-पुस्तकालय)</h4>
+          <p>Official Grade 1 to 5 vernacular chapters with local vocabulary definitions, QR audio handouts, and full offline caching.</p>
+          <div class="module-footer">
+            <span class="module-action-btn">Open Books Library ➔</span>
+          </div>
+        </div>
+
+        <!-- Module 5: Akshar Mala -->
+        <div class="module-card card-akshar" data-nav="viewAkshar">
+          <div class="module-card-top">
+            <span class="module-emoji">🔤</span>
+            <span class="module-tag tag-phonics">Soundboard</span>
+          </div>
+          <h4>Akshar Mala (ध्वनि व अक्षर माला)</h4>
+          <p>Interactive soundboard for Ol Chiki (ᱚ, ᱛ, ᱜ), Ho Warang Citi, Devanagari, Bengali, and Odia native phonetics.</p>
+          <div class="module-footer">
+            <span class="module-action-btn">Explore Sounds ➔</span>
+          </div>
+        </div>
+
+        <!-- Module 6: Sikshak Hub -->
+        <div class="module-card card-teacher" data-nav="viewTeacherHub">
+          <div class="module-card-top">
+            <span class="module-emoji">📊</span>
+            <span class="module-tag tag-gov">Parent & Offline Sync</span>
+          </div>
+          <h4>Sikshak & Gaon Offline Hub (शिक्षक मंच)</h4>
+          <p>Generate 30-sec vernacular WhatsApp audio briefings (Matru-Sandesh) for illiterate parents & download village offline packs.</p>
+          <div class="module-footer">
+            <span class="module-action-btn">Teacher Tools ➔</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive "Today's Tribal Word of the Day" (आज का जनजातीय शब्द) -->
+      <div class="dash-tribal-word-banner">
+        <div class="tribal-word-badge">🌿 आज का जनजातीय शब्द • TRIBAL WORD OF THE DAY</div>
+        <div class="tribal-word-body">
+          <div class="tribal-word-left">
+            <div class="tribal-script">ᱫᱟᱨᱮ</div>
+            <div class="tribal-latin">Dare (दारे)</div>
+            <div class="tribal-lang-tag">Santali (Ol Chiki) • ᱥᱟᱱᱛᱟᱲᱤ</div>
+          </div>
+          <div class="tribal-word-center">
+            <div class="tribal-translation">
+              <span><strong>Hindi:</strong> पेड़ / पौधा (Tree / Plant)</span>
+              <span><strong>English:</strong> Tree / Living Plant</span>
+            </div>
+            <p class="tribal-context"><em>"ᱫᱟᱨᱮ ᱠᱚ ᱫᱚ ᱟᱵᱚ ᱨᱤᱱ ᱜᱟᱛᱮ ᱠᱟᱱᱟ ᱠᱚ (Trees are our lifelong friends) — जैसे गज्जू भाई कहते हैं, प्रकृति ही हमारा सबसे बड़ा शिक्षक है।"</em></p>
+          </div>
+          <div class="tribal-word-right">
+            <button id="btnPlayWordOfDay" class="btn-word-audio" title="Listen to pronunciation">
+              <span>🔊 Listen Audio (उच्चारण सुनें)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick 3-Step Guide for Teachers & Students -->
+      <div class="dash-quick-guide">
+        <div class="guide-header">
+          <h4>💡 मातृभाषा AI कैसे काम करता है? (Quick 3-Step Guide)</h4>
+        </div>
+        <div class="guide-steps-grid">
+          <div class="guide-step-card">
+            <div class="step-num">1</div>
+            <strong>मातृभाषा चुनें (Select Language)</strong>
+            <p>Select from Santali, Ho, Mundari, Kurukh, Khortha, Nagpuri, Hindi, Bengali, or Odia.</p>
+          </div>
+          <div class="guide-step-card">
+            <div class="step-num">2</div>
+            <strong>बोलें या पढ़ें (Speak or Read)</strong>
+            <p>Use Teacher live mic or child reading mode with Gajju Bhai. The AI matches sounds in real time.</p>
+          </div>
+          <div class="guide-step-card">
+            <div class="step-num">3</div>
+            <strong>सीखें और आनंद लें (Learn & Flourish)</strong>
+            <p>Celebrate correct pronunciation with green highlights, confetti, stars, and local Desi Kahani!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         TAB 1: CLASSROOM LIVE BRIDGE (REAL-TIME VOICE TRANSLATION)
+         ==================================================================== -->
+    <section id="viewLiveBridge" class="tab-view">
+      <div class="card-grid">
+        <!-- Input / Speaking Panel -->
+        <div class="app-card">
+          <div class="card-title">
+            <h3>🎙️ Teacher's Spoken Input (शिक्षक आवाज़)</h3>
+            <span class="gov-badge" style="background:#EEF2F6; color:#0B2545;">Voice + Text</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="liveSourceLang">Speaking In (शिक्षक की भाषा):</label>
+            <select id="liveSourceLang" class="select-rich">
+              <option value="hi" selected>हिन्दी (Hindi)</option>
+              <option value="en">English (Indian Accent)</option>
+              <option value="bn">বাংলা (Bengali)</option>
+              <option value="or">ଓଡ଼ିଆ (Odia)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="liveTargetLang">Translate to Student's Mother Tongue (छात्र की मातृभाषा):</label>
+            <select id="liveTargetLang" class="select-rich">
+              <option value="sat" selected>ᱥᱟᱱᱛᱟᱲᱤ (Santali - Ol Chiki)</option>
+              <option value="ho">ᱦᱳ / हो (Ho - Tribal Language)</option>
+              <option value="unr">मुंडारी (Mundari)</option>
+              <option value="kru">कुड़ुख़ (Kurukh / Oraon)</option>
+              <option value="khr">खोरठा (Khortha - Regional Vernacular)</option>
+              <option value="sck">नागपुरी / सादरी (Nagpuri)</option>
+              <option value="hi">हिन्दी (Hindi)</option>
+              <option value="bn">বাংলা (Bengali)</option>
+              <option value="or">ଓଡ଼ିଆ (Odia)</option>
+            </select>
+          </div>
+
+          <!-- Big Tactile Mic Button & Real-Time Controls -->
+          <div class="live-mic-container" id="liveMicCard">
+            <button id="liveMicBtn" class="mic-btn-main" title="Click to start continuous live speech recognition">
+              🎤
+            </button>
+            
+            <!-- Real Web Audio API Analyser Waveform (12 dynamic bars) -->
+            <div class="waveform-box" id="waveformBox" title="Physical Microphone Audio Spectrum">
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+            </div>
+
+            <!-- Voice Activity & Status Pill -->
+            <span id="voiceActivityBadge" class="voice-activity-pill">
+              🎙️ Tap Mic to Start Teaching
+            </span>
+
+            <p id="liveMicStatus" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; text-align: center;">
+              Continuous ultra-sensitive listening in Hindi or English — speak naturally!
+            </p>
+
+            <!-- Real-Time Speech Mode & Auto-Speak Controls -->
+            <div class="mic-settings-row">
+              <div class="engine-pill-group" title="Select Speech Recognition Engine">
+                <button type="button" id="engineStreamBtn" class="engine-pill-btn active">⚡ Ultra-Sensible Stream</button>
+                <button type="button" id="engineBhashiniBtn" class="engine-pill-btn">🇮🇳 Bhashini Sovereign ASR</button>
+              </div>
+              <label class="toggle-label" title="AI Female Agent immediately speaks translated vernacular">
+                <input type="checkbox" id="autoSpeakToggle" checked>
+                <span>Auto-Speak Agent</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Live Real-Time Caption Ticker -->
+          <div id="liveTickerBox" class="live-ticker" style="display: none;">
+            <span style="font-size: 0.78rem; font-weight: 700; color: #64748B; display: block; margin-bottom: 4px;">
+              🔴 LIVE STREAMING CAPTION:
+            </span>
+            <span id="tickerFinal" class="ticker-final"></span>
+            <span id="tickerInterim" class="ticker-interim"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="liveTextInput">Or type/edit lesson phrase:</label>
+            <textarea id="liveTextInput" class="textarea-rich" rows="3" placeholder="e.g. Welcome children! Today we will learn why plants need sunlight and water."></textarea>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+              <button type="button" class="prompt-chip" data-phrase="Good morning children, open your science books on page five.">☀️ Good morning class</button>
+              <button type="button" class="prompt-chip" data-phrase="Plants drink water from the soil and catch warm sunshine.">🌿 Plants & Sunlight</button>
+              <button type="button" class="prompt-chip" data-phrase="Rain clouds bring sweet clean water for our village fields.">🌧️ Rain & Clouds</button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <button id="liveTranslateBtn" class="btn-primary" style="flex: 1;">
+              ⚡ Translate & Explain
+            </button>
+            <button id="samplePhraseBtn" class="btn-outline">
+              💡 Sample Lesson
+            </button>
+          </div>
+        </div>
+
+        <!-- Vernacular Output Panel -->
+        <div class="app-card">
+          <div class="card-title">
+            <h3>📢 Student's Classroom Output (मातृभाषा रूपांतरण)</h3>
+            <span id="outputLangBadge" class="lang-tag">Santali (Ol Chiki)</span>
+          </div>
+
+          <div class="vernacular-card">
+            <div class="vernacular-header">
+              <span style="font-size: 0.85rem; font-weight: 700; color: #166534;">
+                🌱 Child-Friendly Vernacular Translation:
+              </span>
+              <span id="offlineIndicator" style="display:none; font-size: 0.75rem; background: #FEF08A; padding: 2px 8px; border-radius: 9999px; font-weight: 700;">
+                Edge Fallback
+              </span>
+            </div>
+            <p id="vernacularTextOut" class="vernacular-text">
+              ᱫᱟᱨᱮ ᱠᱚ ᱡᱚᱢᱟᱜ ᱵᱮᱱᱟᱣ ᱞᱟᱹᱜᱤᱫ ᱥᱤᱧ ᱪᱟᱸᱫᱚ ᱨᱮᱱᱟᱜ ᱢᱟᱨᱥᱟᱞ ᱟᱨ ᱫᱟᱜ ᱞᱟᱹᱠᱛᱤᱜᱼᱟ᱾
+            </p>
+            <div class="simplified-subtext">
+              <strong>ELI6 Child Simplification:</strong>
+              <span id="simplifiedTextOut">
+                Plants drink water from the soil and catch warm sunshine to cook their sweet food.
+              </span>
+            </div>
+          </div>
+
+          <div class="audio-bar-controls">
+            <button id="playAudioBtn" class="btn-audio" title="Fluent Female AI Voice Agent (Swara / Neerja)">
+              👩‍🏫 🔊 Mitr AI Speech (Female Voice)
+            </button>
+            <button id="slowSpeedBtn" class="speed-toggle" title="Toggle between fluent conversational pace and slow child speed">
+              ⚡ 1.05x Fluent Speed
+            </button>
+            <span id="voiceAgentStatusBadge" style="display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; font-weight:600; padding:4px 10px; border-radius:12px; background:#EEF2FF; color:#4F46E5;">
+              ✨ Fluent Female AI Active
+            </span>
+          </div>
+
+          <!-- Classroom Visual Cue Cards -->
+          <div style="margin-top: 24px;">
+            <label class="form-label">Visual Vocabulary Cues for Kids:</label>
+            <div id="visualCuesBox" class="flashcard-deck">
+              <div class="mini-flashcard">
+                <div style="font-size: 1.8rem;">☀️</div>
+                <strong style="font-size: 0.9rem; color: #0B2545;">Suraj (ᱥᱤᱧ ᱪᱟᱸᱫᱚ)</strong>
+                <p style="font-size: 0.75rem; color: #64748B;">Dhoop / Sunshine</p>
+              </div>
+              <div class="mini-flashcard">
+                <div style="font-size: 1.8rem;">💧</div>
+                <strong style="font-size: 0.9rem; color: #0B2545;">Paani (ᱫᱟᱜ)</strong>
+                <p style="font-size: 0.75rem; color: #64748B;">Jal / Water</p>
+              </div>
+              <div class="mini-flashcard">
+                <div style="font-size: 1.8rem;">🌿</div>
+                <strong style="font-size: 0.9rem; color: #0B2545;">Dare (ᱫᱟᱨᱮ)</strong>
+                <p style="font-size: 0.75rem; color: #64748B;">Ped / Tree</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ====================================================================
+         TAB 2: PATHSHALA LENS (TEXTBOOK OCR & STORY GENERATOR)
+         ==================================================================== -->
+    <section id="viewPathshala" class="tab-view">
+      <div class="app-card" style="margin-bottom: 24px;">
+        <div class="card-title">
+          <h3>📖 Pathshala Lens — Textbook to Desi Kahani & Worksheet</h3>
+          <span class="gov-badge" style="background:#FEF3C7; color:#B45309;">NCERT to Vernacular Story</span>
+        </div>
+
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 16px;">
+          Turn dry textbook paragraphs into an illustrated Indian village story with cultural metaphors and printable bilingual worksheets.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" for="bookTextInput">Paste NCERT Textbook Excerpt or Topic:</label>
+          <textarea id="bookTextInput" class="textarea-rich" rows="3" placeholder="e.g. Grade 3 Science: The process of photosynthesis in plants..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="storyTargetLang">Choose Story Mother Tongue (कहानी की मातृभाषा):</label>
+          <select id="storyTargetLang" class="select-rich">
+            <option value="sat">ᱥᱟᱱᱛᱟᱲᱤ (Santali - Ol Chiki)</option>
+            <option value="khr" selected>खोरठा (Khortha)</option>
+            <option value="sck">नागपुरी / सादरी (Nagpuri)</option>
+            <option value="ho">ᱦᱳ / हो (Ho)</option>
+            <option value="unr">मुंडारी (Mundari)</option>
+            <option value="kru">कुड़ुख़ (Kurukh / Oraon)</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="or">ଓଡ଼ିଆ (Odia)</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
+          <button id="generateKahaniBtn" class="btn-primary">
+            ✨ Generate Desi Kahani & Flashcards
+          </button>
+          <button id="printWorksheetBtn" class="btn-outline">
+            🖨️ Print Bilingual Worksheet (PDF)
+          </button>
+        </div>
+      </div>
+
+      <!-- Generated Kahani Output -->
+      <div id="storyResultBox" class="story-box" style="display:none;">
+        <div class="story-header">
+          <span style="font-size: 2.2rem;">📖</span>
+          <div>
+            <h4 id="storyTitle">चिंटू पत्ता और सूरज चाचा की रसोई</h4>
+            <span style="font-size: 0.85rem; color: var(--fln-emerald); font-weight: 600;">
+              Vernacular Cultural Analogy
+            </span>
+          </div>
+        </div>
+
+        <p id="storyContent" style="font-size: 1.15rem; line-height: 1.8; color: #1E293B; margin-bottom: 16px;"></p>
+
+        <div class="audio-bar-controls">
+          <button id="playStoryAudioBtn" class="btn-audio">
+            🔊 Listen to Kahani in Mother Tongue
+          </button>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <h5 style="font-size: 1rem; color: #0B2545; margin-bottom: 8px;">Interactive Flashcards (Tap to hear):</h5>
+          <div id="kahaniFlashcards" class="flashcard-deck"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ====================================================================
+         TAB 3: BAL VATIKA — BHASHA MITR (KIDS READING COACH)
+         ==================================================================== -->
+    <section id="viewBalVatika" class="tab-view">
+      <div class="kids-room">
+        <div class="mascot-stage">
+          <div class="mascot-giant">🐘</div>
+          <div class="kids-bubble">
+            "आओ मिलकर बोलें! Tap the mic and read aloud with me!"
+          </div>
+        </div>
+
+        <!-- Stars Shelf -->
+        <div class="stars-shelf" id="starsShelf">
+          <span class="star-icon" id="star1">⭐</span>
+          <span class="star-icon" id="star2">⭐</span>
+          <span class="star-icon" id="star3">⭐</span>
+        </div>
+        <p id="flnCheerMsg" style="font-family: var(--font-friendly); font-size: 1.1rem; color: #B45309; font-weight: 600;">
+          Read the sentence in your mother tongue!
+        </p>
+
+        <!-- Reading Sentence Display -->
+        <div class="reading-card-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <span class="gov-badge" style="background:#E0E7FF; color:#3730A3;">Grade 1-3 NIPUN Bharat FLN</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label for="flnLangSelect" style="font-size: 0.88rem; font-weight: 700; color: #78350F;">मातृभाषा चुनें (Select Language):</label>
+              <select id="flnLangSelect" class="select-rich" style="padding: 6px 14px; font-size: 0.9rem; width: auto; font-weight: 600;">
+                <option value="sat" selected>ᱥᱟᱱᱛᱟᱲᱤ (Santali - Ol Chiki)</option>
+                <option value="ho">ᱦᱳ / हो (Ho - Tribal Language)</option>
+                <option value="unr">मुंडारी (Mundari)</option>
+                <option value="kru">कुड़ुख़ (Kurukh / Oraon)</option>
+                <option value="khr">खोरठा (Khortha)</option>
+                <option value="sck">नागपुरी / सादरी (Nagpuri)</option>
+                <option value="hi">हिन्दी (Hindi)</option>
+                <option value="bn">বাংলা (Bengali)</option>
+                <option value="or">ଓଡ଼ିଆ (Odia)</option>
+              </select>
+            </div>
+          </div>
+          <p id="flnReadingSentence" class="reading-sentence">
+            <span class="reading-word" data-word="ᱫᱟᱨᱮ">ᱫᱟᱨᱮ</span>
+            <span class="reading-word" data-word="ᱠᱚ">ᱠᱚ</span>
+            <span class="reading-word" data-word="ᱡᱚᱢᱟᱜ">ᱡᱚᱢᱟᱜ</span>
+            <span class="reading-word" data-word="ᱵᱮᱱᱟᱣ">ᱵᱮᱱᱟᱣ</span>
+            <span class="reading-word" data-word="ᱞᱟᱹᱜᱤᱫ">ᱞᱟᱹᱜᱤᱫ</span>
+            <span class="reading-word" data-word="ᱫᱟᱜ">ᱫᱟᱜ</span>
+            <span class="reading-word" data-word="ᱞᱟᱹᱠᱛᱤᱜᱼᱟ᱾">ᱞᱟᱹᱠᱛᱤᱜᱼᱟ᱾</span>
+          </p>
+          <p id="flnHindiHint" style="font-size: 0.95rem; color: #64748B;">
+            (पौधों को भोजन बनाने के लिए पानी की जरूरत होती है।)
+          </p>
+        </div>
+
+        <!-- Kids Audio & Mic Controls -->
+        <div class="kids-controls">
+          <button id="flnListenBtn" class="btn-kid-listen">
+            🔊 Listen First (पहले सुनो)
+          </button>
+          <button id="flnKidMicBtn" class="btn-kid-mic">
+            🎤 Tap & Speak (माइक दबाओ और बोलो)
+          </button>
+          <button id="flnDemoBtn" class="btn-outline" style="font-size: 0.82rem; padding: 6px 14px; border-radius: 9999px;" title="Demonstrate automatic reading without mic">
+            🎭 Demo Read
+          </button>
+        </div>
+
+        <!-- FLN Audio Waveform Bars -->
+        <div class="waveform-box" id="flnWaveformBox" style="margin: 8px auto 0 auto; height: 28px; display: none;">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+
+        <p id="flnStatusText" style="margin-top: 10px; font-size: 0.9rem; color: #78350F; font-weight: 500;">
+          Click the green mic and read clearly!
+        </p>
+      </div>
+    </section>
+
+
+    <!-- ====================================================================
+         TAB 4: AKSHAR MALA (INTERACTIVE PHONICS & ALPHABET SOUNDBOARD)
+         ==================================================================== -->
+    <section id="viewAkshar" class="tab-view">
+      <div class="app-card">
+        <div class="card-title">
+          <h3>🔤 Akshar & Shabda Mala (अक्षर व ध्वनि माला)</h3>
+          <span class="gov-badge" style="background:#E0F2FE; color:#0369A1;">Foundational Literacy</span>
+        </div>
+
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 16px;">
+          Explore foundational letters and phonetics in indigenous and regional scripts. Tap any letter to hear the sound!
+        </p>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap;">
+          <button class="btn-outline script-filter active" data-script="olchiki">
+            ᱥᱟᱱᱛᱟᱲᱤ (Santali Ol Chiki)
+          </button>
+          <button class="btn-outline script-filter" data-script="deva">
+            हिन्दी (Devanagari)
+          </button>
+          <button class="btn-outline script-filter" data-script="beng">
+            বাংলা (Bengali)
+          </button>
+          <button class="btn-outline script-filter" data-script="odia">
+            ଓଡ଼ିଆ (Odia)
+          </button>
+          <button class="btn-outline script-filter" data-script="ho">
+            ᱦᱳ (Ho Warang Citi)
+          </button>
+        </div>
+
+        <div id="alphabetGrid" class="alphabet-grid"></div>
+      </div>
+    </section>
+
+
+    <!-- ====================================================================
+         TAB 5: SIKSHAK & OFFLINE HUB
+         ==================================================================== -->
+    <section id="viewTeacherHub" class="tab-view">
+      <div class="card-grid">
+        <!-- Parent Voice Note Generator -->
+        <div class="app-card">
+          <div class="card-title">
+            <h3>📱 Matru-Sandesh: Parent Vernacular Voice Note</h3>
+            <span class="gov-badge" style="background:#FCE7F3; color:#9D174D;">Community Inclusion</span>
+          </div>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 14px;">
+            In rural areas, many parents cannot read English or formal Hindi. Generate a 30-second audio WhatsApp briefing in their native mother tongue so they can guide their child.
+          </p>
+
+          <div class="form-group">
+            <label class="form-label" for="parentLessonTitle">Today's Lesson Topic:</label>
+            <input type="text" id="parentLessonTitle" class="select-rich" value="पौधों को धूप और पानी की जरूरत (Plants & Sunlight)" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="parentLangSelect">Parent's Spoken Tongue:</label>
+            <select id="parentLangSelect" class="select-rich">
+              <option value="sat">ᱥᱟᱱᱛᱟᱲᱤ (Santali - Ol Chiki)</option>
+              <option value="khr" selected>खोरठा (Khortha)</option>
+              <option value="sck">नागपुरी / सादरी (Nagpuri)</option>
+              <option value="ho">ᱦᱳ / हो (Ho)</option>
+              <option value="unr">मुंडारी (Mundari)</option>
+              <option value="kru">कुड़ुख़ (Kurukh / Oraon)</option>
+              <option value="hi">हिन्दी (Hindi)</option>
+              <option value="bn">বাংলা (Bengali)</option>
+              <option value="or">ଓଡ଼ିଆ (Odia)</option>
+            </select>
+          </div>
+
+          <button id="generateParentNoteBtn" class="btn-primary" style="width: 100%;">
+            🎙️ Generate 30s Audio Note
+          </button>
+
+          <div id="parentNoteBox" style="display:none; background:#F8FAFC; padding:16px; border-radius:12px; margin-top:16px; border-left:4px solid var(--fln-emerald);">
+            <p id="parentNoteScript" style="font-size: 0.95rem; line-height: 1.6; color: #1E293B;"></p>
+            <button id="playParentAudioBtn" class="btn-audio" style="margin-top: 10px;">
+              🔊 Play Audio Note
+            </button>
+          </div>
+        </div>
+
+        <!-- Offline Lesson Packs Manager -->
+        <div class="app-card">
+          <div class="card-title">
+            <h3>💾 Gaon Offline Packs (ऑफ़लाइन पाठ संग्रह)</h3>
+            <span class="gov-badge" style="background:#DCFCE7; color:#15803D;">Zero Data Ready</span>
+          </div>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 14px;">
+            Pre-cache complete Grade 1 to 5 vernacular curricula into your tablet so lessons work smoothly even when village 4G is down.
+          </p>
+
+          <div style="background: #F1F5F9; padding: 14px; border-radius: 12px; margin-bottom: 16px;">
+            <strong style="color: #0B2545;">Available Offline Cache:</strong>
+            <ul style="margin: 8px 0 0 20px; font-size: 0.88rem; color: #475569;">
+              <li>Grade 1-2 FLN Word Bank (Santali, Ho, Khortha, Bengali)</li>
+              <li>Primary Science Illustrated Analogies (Water cycle, Plants, Weather)</li>
+              <li>Local Dialect Glossaries (1,500+ Curated Words)</li>
+            </ul>
+          </div>
+
+          <button id="downloadPacksBtn" class="btn-primary" style="width: 100%; margin-bottom: 10px;">
+            📥 Download All Packs for Offline School Use
+          </button>
+          <p id="cacheStatusText" style="font-size: 0.8rem; color: #16A34A; text-align: center; font-weight: 600;">
+            ✓ All foundational packs are cached and ready offline
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         TAB 6: JCERT / NCERT E-PUSTAKALAYA & OFFLINE NOTEBOOKS (CLASSES 1-5)
+         ==================================================================== -->
+    <section id="viewNotebooks" class="tab-view">
+      <div class="notebooks-hub-header">
+        <div class="gov-ribbon-sub">
+          <span>🏛️ झारखण्ड सरकार — स्कूली शिक्षा एवं साक्षरता विभाग</span>
+          <span>JCERT / NCERT Primary E-Notebooks</span>
+        </div>
+        <h2>📚 कक्षा १ से ५ ई-पुस्तकालय एवं अभ्यास पुस्तिका</h2>
+        <p>अपनी मातृभाषा में पाठ्यपुस्तकें पढ़ें, 1-क्लिक में ऑफ़लाइन डाउनलोड करें, और बिना इंटरनेट कभी भी पढ़ें!</p>
+      </div>
+
+      <!-- Controls & Filter Toolbar -->
+      <div class="notebooks-toolbar">
+        <div class="toolbar-section">
+          <label class="toolbar-label">कक्षा चुनें (Select Class):</label>
+          <div class="filter-pill-group" id="gradeFilterGroup">
+            <button type="button" class="filter-pill active" data-grade="all">🎒 सभी कक्षाएं (All)</button>
+            <button type="button" class="filter-pill" data-grade="1">कक्षा 1</button>
+            <button type="button" class="filter-pill" data-grade="2">कक्षा 2</button>
+            <button type="button" class="filter-pill" data-grade="3">कक्षा 3</button>
+            <button type="button" class="filter-pill" data-grade="4">कक्षा 4</button>
+            <button type="button" class="filter-pill" data-grade="5">कक्षा 5</button>
+          </div>
+        </div>
+
+        <div class="toolbar-section" style="margin-top: 10px;">
+          <label class="toolbar-label">विषय (Subject):</label>
+          <div class="filter-pill-group" id="subjectFilterGroup">
+            <button type="button" class="filter-pill active" data-subject="all">🌐 सभी विषय (All)</button>
+            <button type="button" class="filter-pill" data-subject="evs">🌿 पर्यावरण (EVS)</button>
+            <button type="button" class="filter-pill" data-subject="math">🔢 गणित (Math)</button>
+            <button type="button" class="filter-pill" data-subject="hindi">📖 हिन्दी (Hindi)</button>
+            <button type="button" class="filter-pill" data-subject="english">🔤 English</button>
+          </div>
+        </div>
+
+        <div class="toolbar-actions-row">
+          <button type="button" id="myOfflineBooksBtn" class="btn-outline-shelf">
+            📥 मेरी ऑफ़लाइन किताबें (<span id="offlineBooksCount">0</span>)
+          </button>
+          <button type="button" id="downloadCurrentGradeBtn" class="btn-bulk-download">
+            ⚡ इस कक्षा का पूरा पैक डाउनलोड करें (1-Click Offline)
+          </button>
+        </div>
+      </div>
+
+      <!-- Chapter Cards Grid -->
+      <div id="notebooksGrid" class="notebooks-grid">
+        <!-- Dynamically populated by app.js -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Vernacular Chapter Reader Modal -->
+  <div id="chapterReaderModal" class="chapter-reader-modal" style="display: none;">
+    <div class="reader-modal-content">
+      <div class="reader-modal-header">
+        <div>
+          <span id="readerSubjectBadge" class="reader-badge">🌿 पर्यावरण (EVS) • कक्षा १</span>
+          <h2 id="readerChapterTitle">पाठ १: हमारा प्यारा परिवार और घर</h2>
+          <p id="readerEnglishTitle" style="font-size: 0.88rem; color: #64748B; margin-top: 2px;"></p>
+        </div>
+        <button id="closeReaderBtn" class="btn-close-modal" title="Close Reader">✕</button>
+      </div>
+
+      <!-- Reader Action Toolbar -->
+      <div class="reader-toolbar">
+        <div class="reader-lang-selector">
+          <label style="font-size: 0.85rem; font-weight: 700; color: #1E293B;">मातृभाषा चुनें (Convert to Mother Tongue):</label>
+          <select id="readerLangSelect" class="select-rich" style="padding: 6px 12px; font-size: 0.9rem;">
+            <option value="sat" selected>ᱥᱟᱱᱛᱟᱲᱤ (Santali - Ol Chiki)</option>
+            <option value="ho">ᱦᱳ / हो (Ho - Tribal Language)</option>
+            <option value="unr">मुंडारी (Mundari)</option>
+            <option value="kru">कुड़ुख़ (Kurukh / Oraon)</option>
+            <option value="khr">खोरठा (Khortha - Regional)</option>
+            <option value="sck">नागपुरी / सादरी (Nagpuri)</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="or">ଓଡ଼ିଆ (Odia)</option>
+          </select>
+        </div>
+
+        <div class="reader-actions-group">
+          <button id="readerNarrationBtn" class="btn-audio" style="padding: 8px 16px; font-size: 0.88rem;">
+            🔊 बोलकर सुनो (0.85x Child Speed)
+          </button>
+          <button id="readerDownloadBtn" class="btn-secondary" style="padding: 8px 14px; font-size: 0.85rem;">
+            📥 ऑफ़लाइन सहेजें
+          </button>
+          <button id="readerPrintBtn" class="btn-outline" style="padding: 8px 14px; font-size: 0.85rem;">
+            🖨️ प्रिंट अभ्यास पुस्तिका
+          </button>
+        </div>
+      </div>
+
+      <!-- Reader Body Layout -->
+      <div class="reader-body-layout">
+        <!-- Left Column: Vernacular & Bilingual Story -->
+        <div class="reader-main-column">
+          <div class="concept-summary-card">
+            <strong>💡 पाठ का मुख्य विचार (Core Concept):</strong>
+            <p id="readerConceptSummary"></p>
+          </div>
+
+          <div class="bilingual-toggle-row">
+            <label class="toggle-label">
+              <input type="checkbox" id="bilingualToggle" checked />
+              <span>मूल हिन्दी/अंग्रेजी भी साथ दिखाएं (Bilingual Parallel View)</span>
+            </label>
+          </div>
+
+          <div id="readerParagraphsList" class="reader-paragraphs-list">
+            <!-- Paragraphs dynamically populated -->
+          </div>
+
+          <!-- Abhyas Pustika (Practice Questions) -->
+          <div class="abhyas-pustika-section">
+            <div class="section-title">
+              <h3>📝 अभ्यास पुस्तिका (Practice Questions & Answers)</h3>
+              <span class="gov-badge" style="background:#FEF3C7; color:#B45309;">सीखें व दोहराएं</span>
+            </div>
+            <div id="readerQuestionsList" class="reader-questions-list">
+              <!-- Questions dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Visual Vocabulary Flashcards -->
+        <div class="reader-sidebar-column">
+          <div class="sidebar-box">
+            <h4>🔤 मुख्य शब्दावली (Key Vocabulary)</h4>
+            <p style="font-size: 0.78rem; color: #64748B; margin-bottom: 12px;">Tap any word in paragraphs or flashcards to see instant translation & pronunciation!</p>
+            <div id="readerKeywordsList" class="keywords-deck">
+              <!-- Flashcards dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Word-to-Word Interactive Translation Popover -->
+      <div id="wordPopover" class="word-popover" style="display: none;">
+        <div class="word-popover-header">
+          <span class="word-popover-badge">🔤 शब्दार्थ (Word Translation)</span>
+          <button type="button" class="btn-close-popover" id="closeWordPopoverBtn">✕</button>
+        </div>
+        <div class="word-popover-body">
+          <div class="word-vernacular-row">
+            <span id="popoverVernacular" class="popover-vernacular">ᱫᱟᱜ</span>
+            <button type="button" id="popoverSpeakBtn" class="btn-popover-audio" title="Listen to word pronunciation">
+              🔊 सुनो
+            </button>
+          </div>
+          <div class="popover-phonetic-row">
+            <span id="popoverPhonetic" class="popover-phonetic">Phonetic: Daag</span>
+          </div>
+          <div class="popover-bilingual-row">
+            <div id="popoverHindi" class="popover-hindi"><strong>हिन्दी:</strong> पानी / जल</div>
+            <div id="popoverEnglish" class="popover-english"><strong>English:</strong> Water</div>
+          </div>
+          <div id="popoverMeaning" class="popover-meaning">💡 जीवन के लिए आवश्यक पेय रस</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backend API Server Configuration Modal -->
+  <div id="serverSettingsModal" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-card" style="max-width: 480px;">
+      <div class="auth-header">
+        <div class="auth-brand-logo">⚙️</div>
+        <h2>Backend Server Settings</h2>
+        <p class="auth-subtitle">Configure Matrubhasa Cloud API Server URL</p>
+      </div>
+      <div class="form-group" style="margin-top: 14px; text-align: left;">
+        <label class="form-label" for="customApiUrlInput">Backend API Base URL:</label>
+        <input type="text" id="customApiUrlInput" class="input-text" placeholder="e.g. https://your-backend.onrender.com" />
+        <div style="font-size: 0.78rem; color: #64748B; margin-top: 6px;">
+          Leave empty to auto-detect current domain with HTTPS. If deployed on separate frontend (Vercel) & backend (Render), paste your Render backend URL here.
+        </div>
+      </div>
+      <div id="serverTestStatus" style="font-size: 0.85rem; margin: 10px 0; font-weight: 600; min-height: 24px;"></div>
+      <div style="display: flex; gap: 8px; margin-top: 14px;">
+        <button type="button" id="testServerBtn" class="btn-outline" style="flex: 1;">🧪 Test Connection</button>
+        <button type="button" id="saveServerBtn" class="btn-primary" style="flex: 1;">💾 Save & Connect</button>
+      </div>
+      <button type="button" id="closeServerModalBtn" class="btn-outline" style="width: 100%; margin-top: 10px; border-color: #CBD5E1;">Close</button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       PERSISTENT FLOATING QUICK-SWITCH MOTHER TONGUE BUTTON (ALL PHASES)
+       ==================================================================== -->
+  <div id="floatingLangTrigger" class="floating-lang-trigger" title="Change Mother Tongue at any time (किसी भी समय अपनी मातृभाषा बदलें)">
+    <div class="floating-lang-icon">🌐</div>
+    <div class="floating-lang-text">
+      <span class="floating-lang-title" data-i18n="floating_trigger_title">मातृभाषा</span>
+      <strong id="floatingCurrentLangName">ᱥᱟᱱᱛᱟᱲᱤ (Santali)</strong>
+    </div>
+    <span class="floating-lang-badge">⇄</span>
+  </div>
+
+  <!-- ====================================================================
+       GLOBAL MOTHER TONGUE SELECTION MODAL (ACCESSIBLE AT ANY PHASE)
+       ==================================================================== -->
+  <div id="languageModal" class="auth-modal-overlay" style="display: none;">
+    <div class="lang-modal-card">
+      <div class="lang-modal-header">
+        <div class="lang-modal-title-wrap">
+          <div class="lang-modal-logo">🌐</div>
+          <div>
+            <h2 data-i18n="modal_lang_title">🌐 अपनी मातृभाषा चुनें • CHOOSE YOUR MOTHER TONGUE</h2>
+            <p data-i18n="modal_lang_subtitle">यह ऐप शिक्षक, विद्यार्थी और अभिभावक सभी के लिए पूर्णतः आपकी मातृभाषा में संचालित होता है।</p>
+          </div>
+        </div>
+        <button type="button" id="closeLangModalBtn" class="btn-close-modal" title="Close">✕</button>
+      </div>
+
+      <div class="lang-cards-grid" id="langCardsGrid">
+        <!-- Card 1: Santali -->
+        <div class="lang-choice-card" data-lang="sat">
+          <div class="lang-card-top">
+            <span class="lang-flag">🌿</span>
+            <div class="lang-names">
+              <span class="lang-native">ᱥᱟᱱᱛᱟᱲᱤ</span>
+              <span class="lang-english">Santali (Ol Chiki)</span>
+            </div>
+            <span class="lang-active-indicator">✓ Active</span>
+          </div>
+          <p class="lang-region">📍 Santhal Pargana, Dumka, Jamtara • 8th Schedule</p>
+          <div class="lang-card-actions">
+            <button type="button" class="btn-hear-sample" data-sample="sat" title="Listen to Native Pronunciation">
+              <span>🔊 Listen</span>
+            </button>
+            <button type="button" class="btn-select-lang" data-lang="sat">
+              <span>Select (चुनें)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 2: Ho -->
+        <div class="lang-choice-card" data-lang="ho">
+          <div class="lang-card-top">
+            <span class="lang-flag">🏹</span>
+            <div class="lang-names">
+              <span class="lang-native">ᱦᱳ / हो</span>
+              <span class="lang-english">Ho (Warang Citi)</span>
+            </div>
+            <span class="lang-active-indicator" style="display:none;">✓ Active</span>
+          </div>
+          <p class="lang-region">📍 Kolhan Division, West Singhbhum, Chaibasa</p>
+          <div class="lang-card-actions">
+            <button type="button" class="btn-hear-sample" data-sample="ho" title="Listen to Native Pronunciation">
+              <span>🔊 Listen</span>
+            </button>
+            <button type="button" class="btn-select-lang" data-lang="ho">
+              <span>Select (चुनें)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 3: Mundari -->
+        <div class="lang-choice-card" data-lang="unr">
+          <div class="lang-card-top">
+            <span class="lang-flag">🌾</span>
+            <div class="lang-names">
+              <span class="lang-native">मुंडारी / मुण्डारी</span>
+              <span class="lang-english">Mundari (Austroasiatic)</span>
+            </div>
+            <span class="lang-active-indicator" style="display:none;">✓ Active</span>
+          </div>
+          <p class="lang-region">📍 Ranchi, Khunti, Torpa • Tribal Mother Tongue</p>
+          <div class="lang-card-actions">
+            <button type="button" class="btn-hear-sample" data-sample="unr" title="Listen to Native Pronunciation">
+              <span>🔊 Listen</span>
+            </button>
+            <button type="button" class="btn-select-lang" data-lang="unr">
+              <span>Select (चुनें)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 4: Kurukh -->
+        <div class="lang-choice-card" data-lang="kru">
+          <div class="lang-card-top">
+            <span class="lang-flag">🍃</span>
+            <div class="lang-names">
+              <span class="lang-native">कुड़ुख़</span>
+              <span class="lang-english">Kurukh / Oraon</span>
+            </div>
+            <span class="lang-active-indicator" style="display:none;">✓ Active</span>
+          </div>
+          <p class="lang-region">📍 Gumla, Lohardaga, Chota Nagpur • Dravidian</p>
+          <div class="lang-card-actions">
+            <button type="button" class="btn-hear-sample" data-sample="kru" title="Listen to Native Pronunciation">
+              <span>🔊 Listen</span>
+            </button>
+            <button type="button" class="btn-select-lang" data-lang="kru">
+              <span>Select (चुनें)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 5: Khortha -->
+        <div class="lang-choice-card" data-lang="khr">
+          <div class="lang-card-top">
+            <span class="lang-flag">🌄</span>
+            <div class="lang-names">
+              <span class="lang-native">खोरठा</span>
+              <span class="lang-english">Khortha</span>
+            </div>
+            <span class="lang-active-indicator" style="display:none;">✓ Active</span>
+          </div>
+          <p class="lang-region">📍 Dhanbad, Bokaro, Hazaribagh, Giridih</p>
+          <div class="lang-card-actions">
+            <button type="button" class="btn-hear-sample" data-sample="khr" title="Listen to Native Pronunciation">
+              <span>🔊 Listen</span>
+            </button>
+            <button type="button" class="btn-select-lang" data-lang="khr">
+              <span>Select (चुनें)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 6: Nagpuri -->
+        <div class="lang-choice-card" data-lang="sck">
+          <div class="lang-card-top">
+            <span class="lang-flag">🌺</span>
+            <div class="lang-names">
+              <span class="lang-native">नागपुरी (सादरी)</span>
+              <span class="lang-english">Nagpuri / Sadri</span>
+            </div>
+            <span class="lang-active-indicator" style="display:none;">✓ Active</span>
+          </div>
+          <p class="lang-region">📍 Ranchi, Simdega, Gumla • Lingua Franca</p>
+          <div class="lang-card-actions">
+            <button type="button" class="btn-hear-sample" data-sample="sck" title="Listen to Native Pronunciation">
+              <span>🔊 Listen</span>
+            </button>
+            <button type="button" class="btn-select-lang" data-lang="sck">
+              <span>Select (चुनें)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 7: Hindi -->
+        <div class="lang-choice-card" data-lang="hi">
+          <div class="lang-card-top">
+            <span class="lang-flag">🇮🇳</span>
+            <div class="lang-names">
+              <span class="lang-native">हिन्दी</span>
+              <span class="lang-english">Hindi</span>
+            </div>
+            <span class="lang-active-indicator" style="display:none;">✓ Active</span>
+          </div>
+          <p class="lang-region">📍 Pan-India & Jharkhand State Official</p>
+          <div class="lang-card-actions">
+            <button type="button" class="btn-hear-sample" data-sample="hi" title="Listen to Native Pronunciation">
+              <span>🔊 Listen</span>
+            </button>
+            <button type="button" class="btn-select-lang" data-lang="hi">
+              <span>Select (चुनें)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 8: Bengali -->
+        <div class="lang-choice-card" data-lang="bn">
+          <div class="lang-card-top">
+            <span class="lang-flag">🌸</span>
+            <div class="lang-names">
+              <span class="lang-native">বাংলা</span>
+              <span class="lang-english">Bengali</span>
+            </div>
+            <span class="lang-active-indicator" style="display:none;">✓ Active</span>
+          </div>
+          <p class="lang-region">📍 East Singhbhum, Jamtara, Pakur</p>
+          <div class="lang-card-actions">
+            <button type="button" class="btn-hear-sample" data-sample="bn" title="Listen to Native Pronunciation">
+              <span>🔊 Listen</span>
+            </button>
+            <button type="button" class="btn-select-lang" data-lang="bn">
+              <span>Select (चुनें)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 9: Odia -->
+        <div class="lang-choice-card" data-lang="or">
+          <div class="lang-card-top">
+            <span class="lang-flag">☀️</span>
+            <div class="lang-names">
+              <span class="lang-native">ଓଡ଼ିଆ</span>
+              <span class="lang-english">Odia</span>
+            </div>
+            <span class="lang-active-indicator" style="display:none;">✓ Active</span>
+          </div>
+          <p class="lang-region">📍 Saraikela-Kharsawan, East Singhbhum</p>
+          <div class="lang-card-actions">
+            <button type="button" class="btn-hear-sample" data-sample="or" title="Listen to Native Pronunciation">
+              <span>🔊 Listen</span>
+            </button>
+            <button type="button" class="btn-select-lang" data-lang="or">
+              <span>Select (चुनें)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 10: English -->
+        <div class="lang-choice-card" data-lang="en">
+          <div class="lang-card-top">
+            <span class="lang-flag">🌐</span>
+            <div class="lang-names">
+              <span class="lang-native">English</span>
+              <span class="lang-english">English (Curriculum)</span>
+            </div>
+            <span class="lang-active-indicator" style="display:none;">✓ Active</span>
+          </div>
+          <p class="lang-region">📍 Associate Official & Textbook Reference</p>
+          <div class="lang-card-actions">
+            <button type="button" class="btn-hear-sample" data-sample="en" title="Listen to Native Pronunciation">
+              <span>🔊 Listen</span>
+            </button>
+            <button type="button" class="btn-select-lang" data-lang="en">
+              <span>Select (चुनें)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="lang-modal-footer">
+        <span class="modal-footer-hint">💡 Selection is immediately saved and synchronizes voice speech, live mic, textbooks, and quizzes.</span>
+        <button type="button" id="confirmLangModalBtn" class="btn-primary" style="padding: 10px 24px;">✓ Confirm & Apply (लागू करें)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       PARENT VOICE QUESTION TO TEACHER MODAL
+       ==================================================================== -->
+  <div id="parentVoiceModal" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-card" style="max-width: 520px;">
+      <div class="auth-header">
+        <div class="auth-brand-logo">🎙️</div>
+        <h3>शिक्षक को मातृभाषा संदेश</h3>
+        <p class="auth-subtitle">Ask Teacher Rajesh Kumar a Question in Mother Tongue</p>
+      </div>
+      <div style="background: #F8FAFC; border: 1px solid var(--border-subtle); border-radius: 12px; padding: 16px; margin-top: 14px; text-align: center;">
+        <div style="font-size: 2.2rem; margin-bottom: 8px;">👩‍🏫 💬</div>
+        <p style="font-size: 0.88rem; color: #334155; line-height: 1.5;">
+          बोलकर अपना संदेश रिकॉर्ड करें। यह शिक्षक के पास आपकी मातृभाषा एवं हिन्दी अनुवाद के साथ तुरंत पहुँचेगा।
+        </p>
+        <button type="button" id="btnRecordParentVoice" class="btn-primary" style="margin-top: 14px; width: 100%;">
+          <span>🎙️ संदेश बोलें (Start Speaking)</span>
+        </button>
+        <div id="parentRecordStatus" style="font-size: 0.8rem; color: #16A34A; margin-top: 8px; display: none;">
+          🟢 रिकॉर्डिंग जारी है... पूरा होने पर शिक्षक को स्वतः भेज दिया जाएगा।
+        </div>
+      </div>
+      <button type="button" id="closeParentVoiceModalBtn" class="btn-outline" style="width: 100%; margin-top: 14px;">बंद करें (Close)</button>
+    </div>
+  </div>
+
+  <!-- Printable Worksheet Container (Visible only when printing) -->
+  <div id="printableWorksheet" class="worksheet-print-header">
+    <h2>GOVERNMENT OF JHARKHAND — DEPARTMENT OF SCHOOL EDUCATION</h2>
+    <h3>Bilingual Vernacular Classroom Worksheet (NIPUN Bharat FLN)</h3>
+    <p>Student Name: _____________________ | Class: _____ | Date: __________</p>
+    <hr style="margin: 12px 0;" />
+    <div id="printContent"></div>
+  </div>
+
+  <!-- App Footer with Creator Attribution -->
+  <footer class="app-footer">
+    <div class="footer-creator">
+      <span class="creator-tag">🏆 Smart India Hackathon 2026 (SIH26042)</span>
+      <p><strong>Matrubhasa AI</strong> — Created & Architected with ❤️ by <strong>Team MATRUSETU</strong></p>
+      <span class="footer-subtext">Government of Jharkhand • Department of School Education • Powered by Digital India Bhashini (NLTM)</span>
+    </div>
+  </footer>
+
+  <script src="i18n.js"></script>
+  <script src="offline_db.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
