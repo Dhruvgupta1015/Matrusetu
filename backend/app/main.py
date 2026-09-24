@@ -130,6 +130,7 @@ class ParentBriefingRequest(BaseModel):
 
 
 @app.get("/api/health")
+@app.get("/health")
 def health():
     b_client = get_bhashini_client()
     hf_token_set = bool(os.getenv("HF_TOKEN"))
@@ -142,6 +143,7 @@ def health():
 
 
 @app.get("/api/languages")
+@app.get("/languages")
 def languages():
     """Returns rich language options with full native names, scripts, and regional context."""
     results = []
@@ -228,6 +230,7 @@ def _translate_with_fallback(text: str, source_lang: str, target_lang: str) -> t
 
 
 @app.post("/api/process", response_model=ProcessResponse)
+@app.post("/process", response_model=ProcessResponse)
 def process(req: ProcessRequest):
     text_to_translate = req.text
     if req.simplify_text:
@@ -251,6 +254,7 @@ def process(req: ProcessRequest):
 
 
 @app.post("/api/realtime/translate")
+@app.post("/realtime/translate")
 def realtime_translate(req: RealtimeTranslateRequest):
     """Low-latency endpoint optimized for live classroom microphone broadcasting."""
     simplified = elif_simplify(req.text, grade=req.grade_level)
@@ -266,6 +270,7 @@ def realtime_translate(req: RealtimeTranslateRequest):
 
 
 @app.post("/api/tts")
+@app.post("/tts")
 def tts(req: TtsRequest):
     """Text-to-speech with silence detection, tribal phonetics, and browser fallback."""
     b_client = get_bhashini_client()
@@ -332,6 +337,7 @@ def tts(req: TtsRequest):
 
 
 @app.post("/api/asr")
+@app.post("/asr")
 def asr(req: AsrRequest):
     """Speech-to-text audio transcription with Bhashini AI ASR."""
     # Sanitize audio base64 input (strips data URI prefix like 'data:audio/wav;base64,')
@@ -382,6 +388,7 @@ def asr(req: AsrRequest):
 
 
 @app.post("/api/kahani")
+@app.post("/kahani")
 def kahani(req: KahaniRequest):
     """Generates an engaging, illustrated Indian folk story and flashcards from textbook concepts in chosen mother tongue."""
     result = generate_desi_kahani(req.topic, target_lang=req.target_lang)
@@ -410,6 +417,7 @@ def kahani(req: KahaniRequest):
 
 
 @app.post("/api/fln/evaluate")
+@app.post("/fln/evaluate")
 def fln_evaluate(req: FlnEvaluateRequest):
     """NIPUN Bharat Foundational Literacy and Numeracy reading assessment."""
     evaluation = evaluate_fln_reading(req.target_text, req.spoken_text)
@@ -417,6 +425,7 @@ def fln_evaluate(req: FlnEvaluateRequest):
 
 
 @app.post("/api/parent/briefing")
+@app.post("/parent/briefing")
 def parent_briefing(req: ParentBriefingRequest):
     """Generates a 30-second audio note script in mother tongue for rural parents."""
     script = generate_parent_briefing(req.lesson_title, req.lang)
@@ -428,6 +437,7 @@ def parent_briefing(req: ParentBriefingRequest):
 
 
 @app.get("/api/tribal/phrases")
+@app.get("/tribal/phrases")
 def tribal_phrases(lang: str = "sat"):
     """Returns pre-cached foundational classroom phrases in the chosen vernacular."""
     phrases = get_common_phrases(lang)
@@ -435,6 +445,7 @@ def tribal_phrases(lang: str = "sat"):
 
 
 @app.get("/api/tribal/lookup")
+@app.get("/tribal/lookup")
 def tribal_lookup(query: str, lang: str = "sat"):
     """Instant offline vocabulary lookup for tribal and regional words."""
     result = find_tribal_word(query, lang)
@@ -444,6 +455,7 @@ def tribal_lookup(query: str, lang: str = "sat"):
 
 
 @app.get("/api/curriculum/books")
+@app.get("/curriculum/books")
 def curriculum_books(grade: Optional[int] = None, subject: Optional[str] = None):
     """Returns list of JCERT / NCERT primary chapters filtered by grade and subject."""
     books = get_all_books(grade=grade, subject=subject)
@@ -451,6 +463,7 @@ def curriculum_books(grade: Optional[int] = None, subject: Optional[str] = None)
 
 
 @app.get("/api/curriculum/chapter")
+@app.get("/curriculum/chapter")
 def curriculum_chapter(id: str, lang: str = "sat"):
     """Fetches full chapter content and worksheets adapted to the student's mother tongue."""
     chapter = get_chapter_by_id(id, target_lang=lang)
@@ -460,6 +473,7 @@ def curriculum_chapter(id: str, lang: str = "sat"):
 
 
 @app.get("/api/curriculum/offline-bundle")
+@app.get("/curriculum/offline-bundle")
 def curriculum_offline_bundle(grade: Optional[int] = None):
     """Returns complete curriculum bundle for bulk offline storage in client IndexedDB."""
     bundle = get_offline_grade_bundle(grade=grade)
@@ -467,6 +481,7 @@ def curriculum_offline_bundle(grade: Optional[int] = None):
 
 
 @app.get("/api/curriculum/word-translate")
+@app.get("/curriculum/word-translate")
 def word_translate(word: str, lang: str = "sat", chapter_id: Optional[str] = None):
     """Instant word-level translation and pronunciation lookup for classroom reading."""
     result = lookup_word_translation(word, target_lang=lang, chapter_id=chapter_id)
@@ -474,15 +489,36 @@ def word_translate(word: str, lang: str = "sat", chapter_id: Optional[str] = Non
 
 
 # Mount Frontend static files for full-stack zero-configuration serving
-frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend"))
+candidate_dirs = [
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "public")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")),
+    os.path.abspath(os.path.join(os.getcwd(), "public")),
+    os.path.abspath(os.path.join(os.getcwd(), "frontend")),
+    os.path.abspath(os.getcwd()),
+]
+
+frontend_dir = None
+for cd in candidate_dirs:
+    if os.path.exists(os.path.join(cd, "index.html")):
+        frontend_dir = cd
+        break
 
 @app.get("/")
 def read_index():
-    index_path = os.path.join(frontend_dir, "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
+    if frontend_dir:
+        index_path = os.path.join(frontend_dir, "index.html")
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
     return {"message": "Matrubhasa AI Backend Active"}
 
-if os.path.exists(frontend_dir):
+@app.get("/api")
+@app.get("/api/")
+def read_api_root():
+    return {"message": "Matrubhasa AI API Active", "version": "2.0.0"}
+
+if frontend_dir and os.path.exists(frontend_dir):
     app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
-    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+    f_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend"))
+    if os.path.exists(f_dir) and f_dir != frontend_dir:
+        app.mount("/frontend", StaticFiles(directory=f_dir), name="frontend")
