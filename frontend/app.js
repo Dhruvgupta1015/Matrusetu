@@ -3279,73 +3279,73 @@ function initNotebooksLibrary() {
 
 const WS_LIBRARY_DATA = [
   {
-    id: 'ws001', type: 'worksheet', emoji: '??', grade: '1',
+    id: 'ws001', type: 'worksheet', emoji: '🌿', grade: '1',
     subject: 'evs', outcome: 'E-FLN-01',
-    title: '????-???? ?? ????? ?????? (Flora & Our Environment)',
-    lang: 'Santali / Hindi', nipunLabel: '[E-FLN-01] ????????? ??????',
+    title: 'पेड़-पौधे और हमारा परिवेश (Flora & Our Environment)',
+    lang: 'Santali / Hindi', nipunLabel: '[E-FLN-01] प्राकृतिक परिवेश',
     approved: true
   },
   {
-    id: 'ws002', type: 'flashcard', emoji: '??', grade: '2',
+    id: 'ws002', type: 'flashcard', emoji: '💧', grade: '2',
     subject: 'evs', outcome: 'E-FLN-02',
-    title: '?? ???? ???????? ????? (Water Cycle Flashcards)',
-    lang: 'Ho / Hindi', nipunLabel: '[E-FLN-02] ??, ???? ??? ????????? ????',
+    title: 'जल चक्र फ्लैशकार्ड (Water Cycle Flashcards)',
+    lang: 'Ho / Hindi', nipunLabel: '[E-FLN-02] जल, मौसम एवं प्राकृतिक चक्र',
     approved: true
   },
   {
-    id: 'ws003', type: 'worksheet', emoji: '??', grade: '1',
+    id: 'ws003', type: 'worksheet', emoji: '🔢', grade: '1',
     subject: 'numeracy', outcome: 'M-FLN-01',
-    title: '? ?? ?? ?? ?????? ????? (Number Sense 1-20)',
-    lang: 'Mundari / Hindi', nipunLabel: '[M-FLN-01] ?????? ?????',
+    title: '१ से २० तक संख्या ज्ञान (Number Sense 1-20)',
+    lang: 'Mundari / Hindi', nipunLabel: '[M-FLN-01] संख्या ज्ञान',
     approved: true
   },
   {
-    id: 'ws004', type: 'flashcard', emoji: '??', grade: '3',
+    id: 'ws004', type: 'flashcard', emoji: '🔤', grade: '3',
     subject: 'literacy', outcome: 'L-FLN-02',
-    title: 'Ol Chiki ????? ????? (Santali Phonics Flashcards)',
-    lang: 'Santali / Hindi', nipunLabel: '[L-FLN-02] ????? ????????',
+    title: 'Ol Chiki ध्वनि कार्ड (Santali Phonics Flashcards)',
+    lang: 'Santali / Hindi', nipunLabel: '[L-FLN-02] ध्वनि जागरूकता',
     approved: true
   },
   {
-    id: 'ws005', type: 'worksheet', emoji: '????????', grade: '2',
+    id: 'ws005', type: 'worksheet', emoji: '👨‍👩‍👦', grade: '2',
     subject: 'oral', outcome: 'L-FLN-01',
-    title: '?????? ?? ????? ????????? (Family & Dialogue Worksheet)',
-    lang: 'Khortha / Hindi', nipunLabel: '[L-FLN-01] ????? ???? ?????',
+    title: 'परिवार और संवाद अभ्यास (Family & Dialogue Worksheet)',
+    lang: 'Khortha / Hindi', nipunLabel: '[L-FLN-01] मौखिक भाषा विकास',
     approved: true
   },
   {
-    id: 'ws006', type: 'worksheet', emoji: '??', grade: '3',
+    id: 'ws006', type: 'worksheet', emoji: '📐', grade: '3',
     subject: 'numeracy', outcome: 'M-FLN-03',
-    title: '???? ??? ??????? ???? (Shapes & Spatial Worksheet)',
-    lang: 'Ho / Hindi', nipunLabel: '[M-FLN-03] ????, ?????',
+    title: 'आकार एवं स्थानिक ज्ञान (Shapes & Spatial Worksheet)',
+    lang: 'Ho / Hindi', nipunLabel: '[M-FLN-03] आकार, स्थान',
     approved: true
   },
   {
-    id: 'ws007', type: 'flashcard', emoji: '??', grade: '4',
+    id: 'ws007', type: 'flashcard', emoji: '🏘️', grade: '4',
     subject: 'evs', outcome: 'E-FLN-03',
-    title: '????????? ???? ????-????? (Community Life Picture Cards)',
-    lang: 'Mundari / Hindi', nipunLabel: '[E-FLN-03] ????????? ????',
+    title: 'सामुदायिक जीवन चित्र-कार्ड (Community Life Picture Cards)',
+    lang: 'Mundari / Hindi', nipunLabel: '[E-FLN-03] सामुदायिक जीवन',
     approved: true
   },
   {
-    id: 'ws008', type: 'worksheet', emoji: '??', grade: '5',
+    id: 'ws008', type: 'worksheet', emoji: '📖', grade: '5',
     subject: 'literacy', outcome: 'L-FLN-04',
-    title: '???-??? ??? ?????????? (Folk Story Comprehension)',
-    lang: 'Santali / Hindi', nipunLabel: '[L-FLN-04] ???????? ???-???',
+    title: 'लोक-कथा बोध अभ्यास (Folk Story Comprehension)',
+    lang: 'Santali / Hindi', nipunLabel: '[L-FLN-04] मातृभाषा लोक-कथा',
     approved: true
   },
   {
-    id: 'ws009', type: 'flashcard', emoji: '?', grade: '2',
+    id: 'ws009', type: 'flashcard', emoji: '➕', grade: '2',
     subject: 'numeracy', outcome: 'M-FLN-02',
-    title: '???? ?? ???? ????? (Addition & Subtraction Cards)',
-    lang: 'All Languages', nipunLabel: '[M-FLN-02] ????, ????',
+    title: 'जोड़ और घटाव कार्ड (Addition & Subtraction Cards)',
+    lang: 'All Languages', nipunLabel: '[M-FLN-02] जोड़, घटाव',
     approved: true
   },
   {
-    id: 'ws010', type: 'worksheet', emoji: '??', grade: '3',
+    id: 'ws010', type: 'worksheet', emoji: '🖼️', grade: '3',
     subject: 'literacy', outcome: 'L-FLN-03',
-    title: '????? ??? ??? ??? (Picture Reading Comprehension)',
-    lang: 'Ho / Hindi', nipunLabel: '[L-FLN-03] ????? ???',
+    title: 'चित्र पठन एवं समझ (Picture Reading Comprehension)',
+    lang: 'Ho / Hindi', nipunLabel: '[L-FLN-03] चित्र पठन',
     approved: true
   }
 ];
@@ -3389,20 +3389,20 @@ function initWsLibrary() {
       <div class="ws-library-card" data-wsid="${item.id}">
         <div class="ws-card-top">
           <span class="ws-card-emoji">${item.emoji}</span>
-          <span class="ws-card-type-badge ${item.type}">${item.type === 'worksheet' ? '??? Worksheet' : '?? Flashcard'}</span>
+          <span class="ws-card-type-badge ${item.type}">${item.type === 'worksheet' ? '🗒️ Worksheet' : '🃏 Flashcard'}</span>
         </div>
         <div class="ws-card-title">${item.title}</div>
         <div class="ws-card-meta">
-          <span class="ws-card-tag">????? ${item.grade}</span>
+          <span class="ws-card-tag">कक्षा ${item.grade}</span>
           <span class="ws-card-tag">${item.subject.toUpperCase()}</span>
-          <span class="ws-card-tag">? Approved</span>
+          <span class="ws-card-tag">✅ Approved</span>
         </div>
-        <div class="ws-card-outcome">?? ${item.nipunLabel}</div>
-        <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;">?? ${item.lang}</div>
+        <div class="ws-card-outcome">🎯 ${item.nipunLabel}</div>
+        <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;">🌐 ${item.lang}</div>
         <div class="ws-card-actions">
-          <button class="ws-card-btn primary" onclick="wsOpenItem('${item.id}')">?? Open</button>
-          <button class="ws-card-btn" onclick="wsPrintItem('${item.id}')">??? Print</button>
-          <button class="ws-card-btn" onclick="wsPlayItem('${item.id}')">?? Audio</button>
+          <button class="ws-card-btn primary" onclick="wsOpenItem('${item.id}')">📂 Open</button>
+          <button class="ws-card-btn" onclick="wsPrintItem('${item.id}')">🖨️ Print</button>
+          <button class="ws-card-btn" onclick="wsPlayItem('${item.id}')">🔊 Audio</button>
         </div>
       </div>
     `).join('');
@@ -3429,7 +3429,7 @@ function initWsLibrary() {
 function wsOpenItem(id) {
   const item = WS_LIBRARY_DATA.find(i => i.id === id);
   if (!item) return;
-  showToast(`?? Opening "${item.title}"  —  Bilingual view loading...`, 'success');
+  showToast(`📂 Opening "${item.title}"  —  Bilingual view loading...`, 'success');
 }
 
 function wsPrintItem(id) {
@@ -3453,7 +3453,7 @@ function wsPlayItem(id) {
   const item = WS_LIBRARY_DATA.find(i => i.id === id);
   if (!item) return;
   speakText(`${item.title}. Grade ${item.grade}. NIPUN outcome: ${item.nipunLabel}`, 'hi', 0.9);
-  showToast(`?? Reading "${item.title}"`, 'info');
+  showToast(`🔊 Reading "${item.title}"`, 'info');
 }
 
 // ==========================================================================
@@ -3466,12 +3466,12 @@ function handleVersionRollback(version, langCode) {
   const statusEl = document.getElementById('versionRollbackStatus');
   if (statusEl) {
     statusEl.style.display = 'block';
-    statusEl.innerHTML = `? Rolling back ${langName} curriculum to ${version}...`;
+    statusEl.innerHTML = `⏳ Rolling back ${langName} curriculum to ${version}...`;
     setTimeout(() => {
-      statusEl.innerHTML = `? ${langName} curriculum rolled back to ${version} successfully. All tablets will receive the update on next BRC sync.`;
+      statusEl.innerHTML = `✅ ${langName} curriculum rolled back to ${version} successfully. All tablets will receive the update on next BRC sync.`;
     }, 1800);
   }
-  showToast(`?? Rolling back ${langName} to ${version}...`, 'info');
+  showToast(`🔄 Rolling back ${langName} to ${version}...`, 'info');
 }
 
 // Initialize WS Library when Pathshala tab is shown
