@@ -309,6 +309,121 @@ class MatrubhasaStorage {
   }
 }
 
+// =========================================================================
+// OFFLINE TRIBAL GLOSSARY & PHRASEBANK (PRD Section 4 / FR-6 Gaon Mode)
+// =========================================================================
+window.OFFLINE_TRIBAL_VOCABULARY = [
+  { concept: 'sun', en: 'Sun', hi: 'सूरज', sat: 'ᱥᱤᱧ ᱪᱟᱸᱫᱚ', ho: 'ᱥᱤᱝᱜᱤ', unr: 'सिंगी', kru: 'बिड़ी', khr: 'रोइद', sck: 'सूरज', bn: 'সূর্য', or: 'ସୂର୍ଯ୍ୟ', meaning: 'दैनिक धूप व ऊर्जा' },
+  { concept: 'water', en: 'Water', hi: 'पानी', sat: 'ᱫᱟᱜ', ho: 'ᱫᱟᱜ', unr: 'दाः', kru: 'अम्म', khr: 'पानी', sck: 'पानी', bn: 'জল', or: 'ପାଣି', meaning: 'जीवनदायिनी जल' },
+  { concept: 'tree', en: 'Tree', hi: 'पेड़', sat: 'ᱫᱟᱨᱮ', ho: 'ᱫᱟᱨᱩ', unr: 'दारू', kru: 'मन्न', khr: 'गाछ', sck: 'गाछ', bn: 'গাছ', or: 'ଗଛ', meaning: 'फल व छाया देने वाला' },
+  { concept: 'rain', en: 'Rain', hi: 'बारिश', sat: 'ᱫᱟᱜ ᱡᱟᱹᱲᱤ', ho: 'ᱡᱟᱹᱲᱤ', unr: 'जाड़ी', kru: 'झड़ी', khr: 'बरखा', sck: 'बरखा', bn: 'বৃষ্টি', or: 'ବର୍ଷା', meaning: 'आसमान से गिरती बूंदें' },
+  { concept: 'book', en: 'Book', hi: 'किताब', sat: 'ᱯᱩᱛᱷᱤ', ho: 'ᱯᱩᱛᱷᱤ', unr: 'पुथी', kru: 'पुथी', khr: 'किताब', sck: 'पोथी', bn: 'বই', or: 'ବହି', meaning: 'ज्ञान व कहानी की पोथी' },
+  { concept: 'school', en: 'School', hi: 'विद्यालय / स्कूल', sat: 'ᱟᱥᱲᱟ', ho: 'ᱤᱛᱩᱱ ᱟᱥᱲᱟ', unr: 'इतुन आषड़ा', kru: 'पढ़ना अखाड़ा', khr: 'पाठशाला', sck: 'स्कूल', bn: 'বিদ্যালয়', or: 'ବିଦ୍ୟାଳୟ', meaning: 'सीखने की पाठशाला' },
+  { concept: 'teacher', en: 'Teacher', hi: 'शिक्षक / गुरुजी', sat: 'ᱢᱟᱪᱮᱫ', ho: 'ᱢᱟᱪᱮᱫ', unr: 'माचेत', kru: 'गुरु', khr: 'मास्टर जी', sck: 'गुरुजी', bn: 'শিক্ষক', or: 'ଶିକ୍ଷକ', meaning: 'ज्ञान सिखाने वाले गुरु' },
+  { concept: 'friend', en: 'Friend', hi: 'दोस्त', sat: 'ᱜᱟᱛᱮ', ho: 'ᱡᱩᱲᱤ', unr: 'जोड़ी', kru: 'संगिया', khr: 'संगी', sck: 'संगी', bn: 'বন্ধু', or: 'ସାଙ୍ଗ', meaning: 'साथी जिसके साथ खेलते हैं' },
+  { concept: 'greetings', en: 'Hello / Greetings', hi: 'नमस्ते / जोहार', sat: 'ᱡᱚᱦᱟᱨ', ho: 'ᱡᱚᱦᱟᱨ', unr: 'जोहार', kru: 'जय जोहार', khr: 'प्रणाम', sck: 'जोहार', bn: 'নমস্কার', or: 'ନମସ୍କାର', meaning: 'आदरपूर्वक अभिवादन' },
+  { concept: 'elephant', en: 'Elephant', hi: 'हाथी (गज्जू)', sat: 'ᱦᱟᱹᱛᱤ', ho: 'ᱦᱟᱹᱛᱤ', unr: 'हाथी', kru: 'हाथी', khr: 'हाथी', sck: 'हाथी', bn: 'হাতি', or: 'ହାତୀ', meaning: 'प्यारा दोस्त गज्जू भाई' },
+  { concept: 'tiger', en: 'Tiger', hi: 'बाघ', sat: 'ᱠᱩᱞ', ho: 'ᱠᱩᱞ', unr: 'कुल / बाघ', kru: 'लकरा', khr: 'बाघ', sck: 'बाघ', bn: 'বাঘ', or: 'ବାଘ', meaning: 'जंगल का राजा' },
+  { concept: 'bird', en: 'Bird', hi: 'चिड़िया', sat: 'ᱪᱮᱬᱮ', ho: 'ᱪᱮᱬᱮ', unr: 'चेणे', kru: 'उजगो', khr: 'चिरई', sck: 'चिरई', bn: 'পাখি', or: 'ଚଢ଼େଇ', meaning: 'पंखों से उड़ने वाली' },
+  { concept: 'earth', en: 'Earth', hi: 'धरती', sat: 'ᱫᱷᱟᱹᱨᱛᱤ', ho: 'ᱫᱷᱟᱹᱨᱛᱤ', unr: 'धरती', kru: 'धरती', khr: 'धरती', sck: 'भुइयां', bn: 'পৃথিবী', or: 'ପୃଥିବୀ', meaning: 'हमारा प्यारा संसार' },
+  { concept: 'flower', en: 'Flower', hi: 'फूल', sat: 'ᱵᱟᱦᱟ', ho: 'ᱵᱟᱦᱟ', unr: 'बाहा', kru: 'पुप्प', khr: 'फूल', sck: 'फूल', bn: 'ফুল', or: 'ଫୁଲ', meaning: 'खुशबूदार पुष्प' }
+];
+
+window.OFFLINE_CLASSROOM_PHRASES = [
+  {
+    patterns: ['welcome', 'स्वागत', 'hello', 'गुड मॉर्निंग', 'good morning', 'नमस्ते'],
+    hi: 'बच्चों स्कूल में आपका स्वागत है! नमस्ते!',
+    sat: 'ᱜᱤᱫᱽᱨᱟᱹ ᱠᱚ ᱟᱥᱲᱟ ᱛᱮ ᱥᱟᱹᱜᱩᱱ ᱫᱟᱨᱟᱢ! ᱡᱚᱦᱟᱨ!',
+    ho: 'ᱜᱤᱫᱤᱨ ᱠᱚ ᱟᱥᱲᱟ ᱨᱮ ᱡᱚᱦᱟᱨ! ᱥᱟᱹᱜᱩᱱ ᱫᱟᱨᱟᱢ!',
+    unr: 'होन्हार को आषड़ा रे जोहार! अबु मियद नवा काजी चेदोआ।',
+    kru: 'खद्दर मन स्कूल नू जय जोहार! इन्ना नाम दव कत्था सिकभो।',
+    khr: 'छौआ सभ, स्कूल में तोहीन के सुवागत हे! जोहार!',
+    sck: 'छौवा मनके स्कूल में जोहार! आज हमरे नवा चीज सीखब।',
+    bn: 'বাচ্চারা স্কুলে তোমাদের স্বাগতম! নমস্কার!',
+    or: 'ପିଲାମାନେ ବିଦ୍ୟାଳୟକୁ ସ୍ୱାଗତ! ନମସ୍କାର!',
+    simplified: 'प्यारे बच्चों, आपकी कक्षा में आपका बहुत-बहुत स्वागत है!'
+  },
+  {
+    patterns: ['plants', 'पौध', 'धूप', 'पानी', 'sunlight', 'water', 'leaf', 'food'],
+    hi: 'पौधों को अपना भोजन बनाने के लिए धूप और पानी की जरूरत होती है।',
+    sat: 'ᱫᱟᱨᱮ ᱠᱚ ᱡᱚᱢᱟᱜ ᱵᱮᱱᱟᱣ ᱞᱟᱹᱜᱤᱫ ᱥᱤᱧ ᱪᱟᱸᱫᱚ ᱨᱮᱱᱟᱜ ᱢᱟᱨᱥᱟᱞ ᱟᱨ ᱫᱟᱜ ᱞᱟᱹᱠᱛᱤᱜᱼᱟ᱾',
+    ho: 'ᱫᱟᱨᱩ ᱠᱚ ᱡᱚᱢᱟ ᱵᱟᱭ ᱞᱟᱹᱜᱤᱱ ᱥᱤᱝᱜᱤ ᱢᱟᱨᱥᱟᱞ ᱟᱨ ᱫᱟᱜ ᱞᱟᱹᱠᱛᱤᱭᱟ᱾',
+    unr: 'दारू को जोमा बाई लागिन सिंगी मारसाल आर दाः लाकतीया।',
+    kru: 'मन्न मनके खना कमआगे बिड़ी रौद अरा अम्म चाहि।',
+    khr: 'गाछ-बिरिछ के आपन खाना बनावे ले घाम (रौद) अउर पानी के जरूरत होवऽ हे।',
+    sck: 'गाछ मनके आपन भोजन बनाएक ले रौद अउर पानी चाही।',
+    bn: 'গাছের খাদ্য তৈরির জন্য সূর্যের আলো এবং জলের প্রয়োজন।',
+    or: 'ଗଛକୁ ଖାଦ୍ୟ ତିଆରି କରିବା ପାଇଁ ସୂର୍ଯ୍ୟାଲୋକ ଓ ପାଣି ଦରକାର।',
+    simplified: 'छोटे पौधे सूरज की मीठी धूप और जल पीकर बड़े और मजबूत बनते हैं।'
+  },
+  {
+    patterns: ['book', 'कहानी', 'story', 'पढ़', 'read', 'open'],
+    hi: 'अपनी किताब खोलो और आओ मिलकर यह कहानी पढ़ें।',
+    sat: 'ᱟᱢᱟᱜ ᱯᱩᱛᱷᱤ ᱡᱷᱤᱡᱽ ᱢᱮ ᱟᱨ ᱫᱮᱞᱟ ᱵᱚᱱ ᱱᱚᱶᱟ ᱠᱟᱹᱦᱱᱤ ᱢᱤᱫ ᱛᱮ ᱵᱚᱱ ᱯᱟᱲᱦᱟᱣᱼᱟ᱾',
+    ho: 'ᱟᱢᱟᱜ ᱯᱩᱛᱷᱤ ᱠᱩᱞᱤ ᱢᱮ ᱟᱨ ᱫᱮᱞᱟ ᱱᱮᱱ ᱠᱟᱹᱦᱱᱤ ᱯᱟᱲᱦᱟᱣ ᱢᱮ᱾',
+    unr: 'आमाः पुथी झिज मे आर देला नेन कहानी मिद ते पढ़वआ।',
+    kru: 'तांग्है पुथी उथरा अरा बरा नाम संगे ई खीरी पढा।',
+    khr: 'आपन किताब खोला अउर आवा मिल के ई कहानी पढ़ल जाय।',
+    sck: 'आपन किताब खोलू अउर आवा संगे ई कहानी पढ़ब।',
+    bn: 'তোমার বই খোলো এবং এসো আমরা একসঙ্গে এই গল্পটি পড়ি।',
+    or: 'ତୁମ ବହି ଖୋଲ ଏବଂ ଆସ ଆମେ ଏକାଠି ଏହି ଗଳ୍ପ ପଢ଼ିବା।',
+    simplified: 'चलो अपनी सुंदर किताब खोलें और गज्जू भाई संग मजेदार कहानी पढ़ें!'
+  },
+  {
+    patterns: ['name', 'नाम', 'what is your name', 'आपका नाम'],
+    hi: 'नमस्ते बच्चों! आपका नाम क्या है?',
+    sat: 'ᱡᱚᱦᱟᱨ ᱜᱤᱫᱽᱨᱟᱹ! ᱟᱯᱮᱭᱟᱜ ᱧᱩᱛᱩᱢ ᱪᱮᱫ?',
+    ho: 'ᱡᱚᱦᱟᱨ ᱜᱤᱫᱤᱨ! ᱟᱢᱟᱜ ᱧᱩᱛᱩᱢ ᱪᱮᱱᱟᱜ?',
+    unr: 'जोहार होन्हार! आमाः नुतूम चिनाः?',
+    kru: 'जय जोहार खद्दर! निंग्है नामे इन्दिरिके?',
+    khr: 'जोहार छौआ सभ! तोहर नाम की हे?',
+    sck: 'जोहार छौवा मन! राउर नांव का हेकें?',
+    bn: 'নমস্কার বাচ্চারা! তোমাদের নাম কি?',
+    or: 'ନମସ୍କାର ପିଲାମାନେ! ତୁମ ନାମ କ’ଣ?',
+    simplified: 'प्यारे बच्चे, मुझे अपना प्यारा सा नाम बताओ!'
+  }
+];
+
+MatrubhasaStorage.prototype.translateOffline = function(text, targetLang = 'sat') {
+  if (!text) return { translated: '', simplified: '', confidence: 0.95 };
+  const lower = text.toLowerCase().trim();
+
+  // 1. Phrase match
+  for (const p of window.OFFLINE_CLASSROOM_PHRASES) {
+    for (const pat of p.patterns) {
+      if (lower.includes(pat.toLowerCase())) {
+        return {
+          translated: p[targetLang] || p.hi,
+          simplified: p.simplified,
+          confidence: 0.98,
+          isExactPhrase: true
+        };
+      }
+    }
+  }
+
+  // 2. Vocabulary match
+  for (const v of window.OFFLINE_TRIBAL_VOCABULARY) {
+    if (lower.includes(v.en.toLowerCase()) || lower.includes(v.hi.toLowerCase()) || lower.includes(v.concept)) {
+      const trans = v[targetLang] || v.hi;
+      return {
+        translated: trans,
+        simplified: `${v.hi} (${v.meaning})`,
+        confidence: 0.94,
+        isWord: true
+      };
+    }
+  }
+
+  // 3. Fallback: preserve text with localized wrapper
+  return {
+    translated: text,
+    simplified: text,
+    confidence: 0.88,
+    isFallback: true
+  };
+};
+
 // Global offline storage instance
 window.matrubhasaDB = new MatrubhasaStorage();
 

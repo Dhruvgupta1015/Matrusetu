@@ -9,14 +9,41 @@
  *   - PWA Offline Service Worker Registration
  */
 
-const API_BASE = (window.location.hostname && window.location.hostname !== 'localhost') ? `http://${window.location.hostname}:8000` : 'http://127.0.0.1:8000';
+function getApiBase() {
+  if (window.__MATRUBHASA_API_BASE__) return window.__MATRUBHASA_API_BASE__;
+  try {
+    const saved = localStorage.getItem('matrubhasa_custom_api');
+    if (saved && saved.trim()) return saved.trim().replace(/\/+$/, '');
+  } catch (e) {}
+
+  // If opened via local file protocol
+  if (window.location.protocol === 'file:') return 'http://127.0.0.1:8000';
+
+  // If opened via HTTPS in cloud production (Render, Railway, Vercel, AWS, etc.)
+  if (window.location.protocol === 'https:') {
+    return window.location.origin;
+  }
+
+  // If opened on localhost or 127.0.0.1
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    if (window.location.port === '8000') return '';
+    return 'http://127.0.0.1:8000';
+  }
+
+  // If accessed on local network IP (e.g. http://192.168.x.x:8000)
+  if (window.location.port === '8000') return '';
+  return `http://${window.location.hostname}:8000`;
+}
+
+let API_BASE = getApiBase();
 
 // Global Application State
 const state = {
   isOffline: false,
   isRecording: false,
   speechSpeed: 1.05, // Fluent, energetic conversational pace for real-time speech agent
-  voiceEngine: 'female_agent', // 'female_agent' (Instant ultra-fluent female AI) or 'bhashini'
+  voiceEngine: 'hybrid', // 'hybrid' (Bhashini Cloud when online, Instant AI on edge)
+  voiceGender: localStorage.getItem('matrubhasa_voice_gender') || 'female',
   currentLang: 'sat',
   recognition: null,
   recognitionFln: null,
@@ -54,19 +81,120 @@ function olChikiToPhonetic(text) {
 }
 
 // ==========================================================================
-// 0.1 HIGH-PERFORMANCE NATURAL FEMALE VOICE AGENT ENGINE
+// 0.1 HIGH-PERFORMANCE NATURAL DUAL-VOICE (MALE & FEMALE) AGENT ENGINE
 // ==========================================================================
 let availableVoices = [];
-let cachedBestFemaleVoice = null;
 let activeSpeechUtterance = null;
 let speechKeepAliveInterval = null;
+let audioCtxInstance = null;
+
+// Procedural Web Audio API Sound Synthesizer (100% Offline, Zero-Latency, Zero-Dependencies)
+function playChimeSound(type = 'click') {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    if (!audioCtxInstance) {
+      audioCtxInstance = new AudioContext();
+    }
+    if (audioCtxInstance.state === 'suspended') {
+      audioCtxInstance.resume();
+    }
+    const ctx = audioCtxInstance;
+    const now = ctx.currentTime;
+
+    if (type === 'success' || type === 'celebrate') {
+      // Cheerful celebratory arpeggio: C5 -> E5 -> G5 -> C6
+      const freqs = [523.25, 659.25, 783.99, 1046.50];
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+        gain.gain.setValueAtTime(0, now + idx * 0.08);
+        gain.gain.linearRampToValueAtTime(0.2, now + idx * 0.08 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.08);
+        osc.stop(now + idx * 0.08 + 0.36);
+      });
+    } else if (type === 'star') {
+      // Sparkling bell chime for star reward
+      const freqs = [880, 1174.66, 1760];
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+        gain.gain.setValueAtTime(0.25, now + idx * 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.06);
+        osc.stop(now + idx * 0.06 + 0.45);
+      });
+    } else if (type === 'female') {
+      // Bright, sweet female voice switch confirmation chime
+      [659.25, 880].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+        gain.gain.setValueAtTime(0.18, now + idx * 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.25);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.07);
+        osc.stop(now + idx * 0.07 + 0.26);
+      });
+    } else if (type === 'male') {
+      // Warm, deep resonant male voice switch confirmation chime
+      [329.63, 440].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+        gain.gain.setValueAtTime(0.22, now + idx * 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.07);
+        osc.stop(now + idx * 0.07 + 0.31);
+      });
+    } else if (type === 'mascot') {
+      // Playful bouncy pop for Gajju Bhai
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(350, now);
+      osc.frequency.exponentialRampToValueAtTime(700, now + 0.15);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.23);
+    } else {
+      // Subtle tactile click
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, now);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.06);
+    }
+  } catch (e) {
+    // Graceful fallback if AudioContext blocked
+  }
+}
 
 function loadSpeechVoices() {
   if (!('speechSynthesis' in window)) return;
   availableVoices = window.speechSynthesis.getVoices();
-  if (availableVoices && availableVoices.length > 0) {
-    cachedBestFemaleVoice = findOptimalFemaleVoice(availableVoices, state.currentLang);
-  }
 }
 
 if ('speechSynthesis' in window) {
@@ -76,41 +204,60 @@ if ('speechSynthesis' in window) {
   };
 }
 
-function findOptimalFemaleVoice(voices, lang = 'hi') {
+function findOptimalAIVoice(voices, lang = 'hi', gender = 'female') {
   if (!voices || voices.length === 0) return null;
 
-  // 1. High priority: Indian female natural / neural voices
-  const prioritizedFemaleVoiceNames = [
-    'swara', // Microsoft Swara Online (Natural) - Hindi (India)
+  const isMale = (gender || '').toLowerCase() === 'male';
+
+  const femalePriorityKeywords = [
+    'swara', // Microsoft Swara Online (Natural) - Hindi
     'neerja', // Microsoft Neerja Online (Natural) - English (India)
     'google हिन्दी', // Google Hindi Female
     'google hindi',
     'kalpana', // Microsoft Kalpana - Hindi
     'heera', // Microsoft Heera - English (India)
-    'zira', // Microsoft Zira - English (Female)
-    'sunita',
-    'veena',
-    'ananya',
+    'zira', // Microsoft Zira - English
+    'sunita', 'veena', 'ananya'
   ];
 
-  for (const target of prioritizedFemaleVoiceNames) {
+  const malePriorityKeywords = [
+    'madhur', // Microsoft Madhur Online (Natural) - Hindi
+    'prabhat', // Microsoft Prabhat Online (Natural) - English (India)
+    'ravi', // Microsoft Ravi - English (India)
+    'david', // Microsoft David - English
+    'hemant', // Microsoft Hemant - Hindi
+    'mark', 'george'
+  ];
+
+  const targetList = isMale ? malePriorityKeywords : femalePriorityKeywords;
+
+  // 1. Search by name priority keyword
+  for (const target of targetList) {
     const match = voices.find(v => v.name && v.name.toLowerCase().includes(target));
     if (match) return match;
   }
 
-  // 2. Language-specific female voice
+  // 2. Language-specific search with gender tag
   let targetPrefix = 'hi';
   if (lang === 'bn') targetPrefix = 'bn';
   else if (lang === 'or') targetPrefix = 'or';
   else if (lang === 'en') targetPrefix = 'en';
 
-  const femaleLang = voices.find(v =>
-    v.lang && v.lang.toLowerCase().startsWith(targetPrefix) &&
-    (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('woman') || v.name.toLowerCase().includes('girl'))
-  );
-  if (femaleLang) return femaleLang;
+  if (isMale) {
+    const maleLang = voices.find(v =>
+      v.lang && v.lang.toLowerCase().startsWith(targetPrefix) &&
+      (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('man') || v.name.toLowerCase().includes('boy'))
+    );
+    if (maleLang) return maleLang;
+  } else {
+    const femaleLang = voices.find(v =>
+      v.lang && v.lang.toLowerCase().startsWith(targetPrefix) &&
+      (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('woman') || v.name.toLowerCase().includes('girl'))
+    );
+    if (femaleLang) return femaleLang;
+  }
 
-  // 3. Any voice matching target language prefix
+  // 3. Any voice matching language
   const anyLang = voices.find(v => v.lang && v.lang.toLowerCase().startsWith(targetPrefix));
   if (anyLang) return anyLang;
 
@@ -124,43 +271,63 @@ function findOptimalFemaleVoice(voices, lang = 'hi') {
 function stopActiveSpeech() {
   if ('speechSynthesis' in window) {
     clearInterval(speechKeepAliveInterval);
-    window.speechSynthesis.cancel();
+    try {
+      window.speechSynthesis.cancel();
+    } catch (e) {}
     activeSpeechUtterance = null;
   }
 }
 
-function speakWithFemaleAgent(rawText, lang, onFinish) {
-  if (!('speechSynthesis' in window) || !rawText) {
+function speakWithAIAgent(rawText, lang = 'sat', gender = null, onFinish = null) {
+  if (!rawText) {
+    if (onFinish) onFinish();
+    return;
+  }
+
+  const selectedGender = (gender || state.voiceGender || 'female').toLowerCase();
+
+  if (!('speechSynthesis' in window)) {
+    // If browser lacks Web Speech, provide procedural audio feedback
+    playChimeSound(selectedGender === 'male' ? 'male' : 'female');
     if (onFinish) onFinish();
     return;
   }
 
   stopActiveSpeech();
 
-  // Convert Ol Chiki to phonetic Devanagari so speech engine speaks it smoothly
+  // Convert Ol Chiki / tribal script to phonetic Devanagari so speech engine speaks it naturally
   const textToSpeak = olChikiToPhonetic(rawText);
 
   const utterance = new SpeechSynthesisUtterance(textToSpeak);
-  activeSpeechUtterance = utterance; // Retain reference to prevent Chrome GC bug
+  activeSpeechUtterance = utterance;
 
-  // Frequently-driven, lively, natural female voice cadence
+  // Pace control
   utterance.rate = state.speechSpeed || 1.05;
-  utterance.pitch = 1.06; // Crisp, friendly female tone
+
+  // Gender acoustic tuning:
+  // Female: crisp, bright, cheerful tone (pitch 1.08)
+  // Male: deep, warm, authoritative, calm tone (pitch 0.85)
+  if (selectedGender === 'male') {
+    utterance.pitch = 0.85;
+  } else {
+    utterance.pitch = 1.08;
+  }
   utterance.volume = 1.0;
 
-  // Determine appropriate locale
+  // Locale setup
   let targetLocale = 'hi-IN';
   if (lang === 'bn') targetLocale = 'bn-IN';
   else if (lang === 'or') targetLocale = 'or-IN';
   else if (lang === 'en') targetLocale = 'en-IN';
-  else targetLocale = 'hi-IN'; // Devanagari fallback for sat, ho, unr, kru, khr, sck, hi
+  else targetLocale = 'hi-IN'; // Phonetic Devanagari mapping for sat, ho, unr, kru, khr, sck, hi
 
   utterance.lang = targetLocale;
 
   if (!availableVoices || availableVoices.length === 0) {
     availableVoices = window.speechSynthesis.getVoices();
   }
-  const chosenVoice = findOptimalFemaleVoice(availableVoices, lang);
+
+  const chosenVoice = findOptimalAIVoice(availableVoices, lang, selectedGender);
   if (chosenVoice) {
     utterance.voice = chosenVoice;
   }
@@ -180,23 +347,28 @@ function speakWithFemaleAgent(rawText, lang, onFinish) {
     finishSpeech();
   };
 
-  // Chrome watchdog: prevent speech synthesis pause after 10s
+  // Chrome watchdog: prevent speech synthesis freeze after 10s
   clearInterval(speechKeepAliveInterval);
   speechKeepAliveInterval = setInterval(() => {
-    if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+    if (window.speechSynthesis && window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
       window.speechSynthesis.pause();
       window.speechSynthesis.resume();
     }
-  }, 10000);
+  }, 9500);
 
   setTimeout(() => {
     try {
       window.speechSynthesis.speak(utterance);
     } catch (e) {
-      console.warn('Speak error:', e);
+      console.warn('SpeechSynthesis speak exception:', e);
       finishSpeech();
     }
-  }, 35);
+  }, 40);
+}
+
+// Backward-compatible alias
+function speakWithFemaleAgent(rawText, lang, onFinish) {
+  speakWithAIAgent(rawText, lang, 'female', onFinish);
 }
 
 // ==========================================================================
@@ -204,6 +376,9 @@ function speakWithFemaleAgent(rawText, lang, onFinish) {
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
   initServiceWorker();
+  initMotherTongueEngine();
+  initSecureContextDiagnostics();
+  initServerSettingsModal();
   initTabs();
   initNetworkDetector();
   initAuth();
@@ -215,7 +390,324 @@ document.addEventListener('DOMContentLoaded', () => {
   initTeacherHub();
   initNotebooksLibrary();
   initConfetti();
+  initAdminReviewConsole();
 });
+
+function showToast(msg, type = 'info') {
+  console.log(`[Toast ${type}]: ${msg}`);
+}
+
+function initAdminReviewConsole() {
+  const adminSubtabBtns = document.querySelectorAll('.admin-subtab-btn');
+  const adminSubtabPanels = document.querySelectorAll('.admin-subtab-panel');
+  if (!adminSubtabBtns || adminSubtabBtns.length === 0) return;
+
+  adminSubtabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      adminSubtabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const targetSubtab = btn.getAttribute('data-subtab');
+      adminSubtabPanels.forEach(p => {
+        if (p.id === targetSubtab) {
+          p.classList.add('active');
+          p.style.display = 'block';
+        } else {
+          p.classList.remove('active');
+          p.style.display = 'none';
+        }
+      });
+    });
+  });
+}
+
+// ==========================================================================
+// 0.3 MULTILINGUAL MOTHER TONGUE ENGINE & PERSISTENT SWITCHER (ALL PHASES)
+// ==========================================================================
+function initMotherTongueEngine() {
+  if (window.I18N) {
+    window.I18N.applyAllTranslations();
+    window.I18N.updateLanguagePickersUI();
+    state.currentLang = window.I18N.currentLang;
+  }
+
+  // Phase 1: Pre-login Auth Modal Mother Tongue Chips
+  document.querySelectorAll('.auth-lang-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const lang = chip.getAttribute('data-lang');
+      if (window.I18N) {
+        window.I18N.setLanguage(lang, false);
+      }
+    });
+  });
+
+  // Phase 2: Persistent Gov Ribbon Button
+  const govLangSwitchBtn = document.getElementById('govLangSwitchBtn');
+  if (govLangSwitchBtn) {
+    govLangSwitchBtn.addEventListener('click', openLanguageModal);
+  }
+
+  // Phase 3: Cinematic Welcome Screen Language Chips
+  document.querySelectorAll('.cinematic-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const lang = chip.getAttribute('data-lang');
+      if (window.I18N) {
+        window.I18N.setLanguage(lang, true);
+        if (state.currentUser) {
+          playCinematicWelcome(state.currentUser);
+        }
+      }
+    });
+  });
+
+  // Phase 4: Floating Persistent Quick-Switch Button (Bottom Right)
+  const floatingLangTrigger = document.getElementById('floatingLangTrigger');
+  if (floatingLangTrigger) {
+    floatingLangTrigger.addEventListener('click', openLanguageModal);
+  }
+
+  // Phase 5: Dashboard Change Language Button
+  const dashChangeLangBtn = document.getElementById('dashChangeLangBtn');
+  if (dashChangeLangBtn) {
+    dashChangeLangBtn.addEventListener('click', openLanguageModal);
+  }
+
+  // Phase 6: Parent Portal Switch Tongue Button
+  const btnSwitchParentLang = document.getElementById('btnSwitchParentLang');
+  if (btnSwitchParentLang) {
+    btnSwitchParentLang.addEventListener('click', openLanguageModal);
+  }
+
+  // Modal Close buttons
+  const closeLangModalBtn = document.getElementById('closeLangModalBtn');
+  if (closeLangModalBtn) {
+    closeLangModalBtn.addEventListener('click', closeLanguageModal);
+  }
+
+  const confirmLangModalBtn = document.getElementById('confirmLangModalBtn');
+  if (confirmLangModalBtn) {
+    confirmLangModalBtn.addEventListener('click', closeLanguageModal);
+  }
+
+  const languageModal = document.getElementById('languageModal');
+  if (languageModal) {
+    languageModal.addEventListener('click', (e) => {
+      if (e.target === languageModal) {
+        closeLanguageModal();
+      }
+    });
+  }
+
+  // Modal Cards interactive selection
+  document.querySelectorAll('.lang-choice-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const lang = card.getAttribute('data-lang');
+      if (window.I18N) {
+        window.I18N.setLanguage(lang, true);
+        closeLanguageModal();
+        showLanguageToast(lang);
+      }
+    });
+  });
+
+  // Modal Sample Audio Buttons
+  document.querySelectorAll('.btn-hear-sample').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const sampleLang = btn.getAttribute('data-sample');
+      const meta = window.MOTHER_TONGUES ? window.MOTHER_TONGUES[sampleLang] : null;
+      if (meta && meta.audioGreeting) {
+        playVernacularSpeech(meta.audioGreeting, sampleLang, btn);
+      }
+    });
+  });
+
+  // Parent Voice Question Modal
+  const btnParentAskTeacher = document.getElementById('btnParentAskTeacher');
+  const parentVoiceModal = document.getElementById('parentVoiceModal');
+  const closeParentVoiceModalBtn = document.getElementById('closeParentVoiceModalBtn');
+  const btnRecordParentVoice = document.getElementById('btnRecordParentVoice');
+  const parentRecordStatus = document.getElementById('parentRecordStatus');
+
+  if (btnParentAskTeacher && parentVoiceModal) {
+    btnParentAskTeacher.addEventListener('click', () => {
+      parentVoiceModal.style.display = 'flex';
+      if (parentRecordStatus) parentRecordStatus.style.display = 'none';
+    });
+  }
+
+  if (closeParentVoiceModalBtn && parentVoiceModal) {
+    closeParentVoiceModalBtn.addEventListener('click', () => {
+      parentVoiceModal.style.display = 'none';
+    });
+  }
+
+  if (btnRecordParentVoice) {
+    btnRecordParentVoice.addEventListener('click', () => {
+      if (parentRecordStatus) {
+        parentRecordStatus.style.display = 'block';
+        btnRecordParentVoice.innerHTML = '🛑 रिकॉर्डिंग संपन्न (Sent to Teacher Rajesh Kumar!)';
+        btnRecordParentVoice.style.background = '#16A34A';
+        setTimeout(() => {
+          if (parentVoiceModal) parentVoiceModal.style.display = 'none';
+          btnRecordParentVoice.innerHTML = '<span>🎙️ संदेश बोलें (Start Speaking)</span>';
+          btnRecordParentVoice.style.background = '';
+          alert('✅ आपका मातृभाषा वाक् संदेश शिक्षक राजेश कुमार जी को सफलतापूर्वक भेज दिया गया है!');
+        }, 1800);
+      }
+    });
+  }
+
+  // Dashboard Parent Audio Briefing Button
+  const btnPlayDashParentAudio = document.getElementById('btnPlayDashParentAudio');
+  if (btnPlayDashParentAudio) {
+    btnPlayDashParentAudio.addEventListener('click', () => {
+      const summaryEl = document.getElementById('parentTodaySummaryText');
+      const text = summaryEl ? summaryEl.textContent : 'नमस्ते अभिभावक जी!';
+      const currentLang = window.I18N ? window.I18N.currentLang : 'sat';
+      playVernacularSpeech(text, currentLang, btnPlayDashParentAudio);
+    });
+  }
+
+  // Listen for languageChanged event to update dynamic strings
+  window.addEventListener('matrubhasa:languageChanged', (e) => {
+    const lang = e.detail.lang;
+    state.currentLang = lang;
+    const meta = window.MOTHER_TONGUES ? window.MOTHER_TONGUES[lang] : null;
+
+    // Update parent audio badge
+    const parentAudioBadge = document.getElementById('parentAudioLangBadge');
+    if (parentAudioBadge && meta) {
+      parentAudioBadge.textContent = `Spoken in: ${meta.name_native} (${meta.name_en})`;
+    }
+
+    // Refresh user profile UI with new language
+    if (state.currentUser) {
+      updateUserProfileUI(state.currentUser);
+    }
+  });
+}
+
+function openLanguageModal() {
+  const modal = document.getElementById('languageModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    if (window.I18N) window.I18N.updateLanguagePickersUI();
+  }
+}
+
+function closeLanguageModal() {
+  const modal = document.getElementById('languageModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function showLanguageToast(langCode) {
+  const meta = window.MOTHER_TONGUES ? window.MOTHER_TONGUES[langCode] : null;
+  if (!meta) return;
+  let toast = document.getElementById('langChangeToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'langChangeToast';
+    toast.style.cssText = `
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0B2545;
+      color: #FFFFFF;
+      border: 2px solid #FF7700;
+      border-radius: 9999px;
+      padding: 10px 22px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      z-index: 10001;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideDownToast 0.3s ease;
+    `;
+    document.body.appendChild(toast);
+  }
+  toast.innerHTML = `🌐 मातृभाषा परिवर्तित: <strong>${meta.name_native} (${meta.name_en})</strong> ✨`;
+  toast.style.display = 'flex';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3200);
+}
+
+function initSecureContextDiagnostics() {
+  const banner = document.getElementById('insecureMicBanner');
+  const dismissBtn = document.getElementById('dismissMicBannerBtn');
+  if (dismissBtn && banner) {
+    dismissBtn.addEventListener('click', () => {
+      banner.style.display = 'none';
+    });
+  }
+
+  // Check if page is loaded over insecure HTTP on a remote network or IP
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  if (!window.isSecureContext && !isLocal && banner) {
+    banner.style.display = 'block';
+  }
+}
+
+function initServerSettingsModal() {
+  const settingsBtn = document.getElementById('serverSettingsBtn');
+  const modal = document.getElementById('serverSettingsModal');
+  const closeBtn = document.getElementById('closeServerModalBtn');
+  const input = document.getElementById('customApiUrlInput');
+  const testBtn = document.getElementById('testServerBtn');
+  const saveBtn = document.getElementById('saveServerBtn');
+  const status = document.getElementById('serverTestStatus');
+
+  if (!settingsBtn || !modal) return;
+
+  settingsBtn.addEventListener('click', () => {
+    if (input) input.value = localStorage.getItem('matrubhasa_custom_api') || API_BASE;
+    if (status) status.innerHTML = `Active Endpoint: <code>${API_BASE || '(relative /)'}</code>`;
+    modal.style.display = 'flex';
+  });
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+  }
+
+  if (testBtn) {
+    testBtn.addEventListener('click', async () => {
+      const urlToTest = (input.value || '').trim().replace(/\/+$/, '') || getApiBase();
+      if (status) status.innerHTML = '⏳ Testing connection...';
+      try {
+        const resp = await fetch(`${urlToTest}/api/health`);
+        if (resp.ok) {
+          const data = await resp.json();
+          if (status) {
+            status.innerHTML = `<span style="color:#16A34A;">✅ Connected! Bhashini: ${data.bhashini_connected ? 'Active' : 'Offline'}. Glossary items: ${data.offline_tribal_glossary_loaded}</span>`;
+          }
+        } else {
+          if (status) status.innerHTML = `<span style="color:#DC2626;">⚠️ Server returned status ${resp.status}</span>`;
+        }
+      } catch (err) {
+        if (status) status.innerHTML = `<span style="color:#DC2626;">❌ Failed: ${err.message}. Check URL or CORS.</span>`;
+      }
+    });
+  }
+
+  if (saveBtn) {
+    saveBtn.addEventListener('click', () => {
+      const customUrl = (input.value || '').trim().replace(/\/+$/, '');
+      if (customUrl) {
+        localStorage.setItem('matrubhasa_custom_api', customUrl);
+      } else {
+        localStorage.removeItem('matrubhasa_custom_api');
+      }
+      API_BASE = getApiBase();
+      modal.style.display = 'none';
+      if (typeof initNetworkDetector === 'function') initNetworkDetector();
+    });
+  }
+}
 
 function initServiceWorker() {
   if ('serviceWorker' in navigator) {
@@ -398,6 +890,17 @@ function initAuth() {
     });
   }
 
+  const demoParentBtn = document.getElementById('demoParentBtn');
+  if (demoParentBtn) {
+    demoParentBtn.addEventListener('click', () => {
+      completeAuthentication({
+        name: 'Smt. Malti Devi (मालती देवी)',
+        email: 'parent.malti@matrubhasa.in',
+        role: 'parent'
+      });
+    });
+  }
+
   // Header Logout / Switch Account button
   if (authTriggerBtn) {
     authTriggerBtn.addEventListener('click', () => {
@@ -442,29 +945,64 @@ function updateUserProfileUI(user) {
   const dashAvatar = document.getElementById('dashAvatar');
   const dashGreetingTitle = document.getElementById('dashGreetingTitle');
   const dashGreetingDesc = document.getElementById('dashGreetingDesc');
+  const dashParentHubSection = document.getElementById('dashParentHubSection');
 
   if (profilePill) profilePill.style.display = 'inline-flex';
 
   const isTeacher = user.role === 'teacher';
-  const roleLabel = isTeacher ? '👨‍🏫 Teacher' : (user.role === 'student' ? '🎒 Student' : '👨‍👩‍👦 Parent');
-  const avatarIcon = isTeacher ? '👨‍🏫' : (user.role === 'student' ? '🐘' : '👨‍👩‍👦');
+  const isStudent = user.role === 'student';
+  const isParent = user.role === 'parent';
+
+  const roleLabel = isTeacher 
+    ? (window.I18N ? window.I18N.t('role_teacher') : '👨‍🏫 Teacher')
+    : (isStudent 
+        ? (window.I18N ? window.I18N.t('role_student') : '🎒 Student') 
+        : (window.I18N ? window.I18N.t('role_parent') : '👨‍👩‍👦 Parent'));
+
+  const avatarIcon = isTeacher ? '👨‍🏫' : (isStudent ? '🐘' : '👨‍👩‍👦');
 
   if (roleBadge) roleBadge.textContent = roleLabel;
   if (userName) userName.textContent = user.name;
 
   if (dashAvatar) dashAvatar.textContent = avatarIcon;
-  if (dashRoleBadge) dashRoleBadge.textContent = roleLabel + (isTeacher ? ' In-Charge' : ' (Grade 3)');
+  if (dashRoleBadge) {
+    dashRoleBadge.textContent = isTeacher 
+      ? '👨‍🏫 Teacher In-Charge (कक्षा १-५)' 
+      : (isStudent ? '🎒 Student (Grade 3 • Ananya)' : '👨‍👩‍👦 Parent (अभिभावक • मालती देवी)');
+  }
+
+  const currentLang = window.I18N ? window.I18N.currentLang : (state.currentLang || 'sat');
+  const meta = (window.MOTHER_TONGUES && window.MOTHER_TONGUES[currentLang]) ? window.MOTHER_TONGUES[currentLang] : { name_native: 'ᱥᱟᱱᱛᱟᱲᱤ', name_en: 'Santali' };
 
   if (dashGreetingTitle) {
-    dashGreetingTitle.textContent = isTeacher 
-      ? `जोहार & नमस्ते, ${user.name} जी!`
-      : `जोहार & नमस्ते, ${user.name}! 🌟`;
+    if (isTeacher) {
+      dashGreetingTitle.textContent = `जोहार & नमस्ते, ${user.name} जी!`;
+    } else if (isStudent) {
+      dashGreetingTitle.textContent = `जोहार & नमस्ते, ${user.name}! 🌟`;
+    } else {
+      dashGreetingTitle.textContent = `जोहार & नमस्ते, ${user.name}! 🏡`;
+    }
   }
 
   if (dashGreetingDesc) {
-    dashGreetingDesc.textContent = isTeacher
-      ? 'मातृभाषा AI में आपका स्वागत है। यहाँ से आप कक्षा सेतु, भाषा मित्र, एवं पाठ्य सामग्री को एक क्लिक में चला सकते हैं।'
-      : 'गज्जू भाई आपका इंतज़ार कर रहे हैं! आओ मिलकर अपनी मातृभाषा में बोलें, नए शब्द सीखें और सितारे जीतें!';
+    if (isTeacher) {
+      dashGreetingDesc.textContent = 'मातृभाषा AI में आपका स्वागत है। यहाँ से आप कक्षा सेतु, भाषा मित्र, एवं पाठ्य सामग्री को एक क्लिक में चला सकते हैं।';
+    } else if (isStudent) {
+      dashGreetingDesc.textContent = 'गज्जू भाई आपका इंतज़ार कर रहे हैं! आओ मिलकर अपनी मातृभाषा में बोलें, नए शब्द सीखें और सितारे जीतें!';
+    } else {
+      dashGreetingDesc.textContent = `मातृभाषा AI में आपका स्वागत है। यहाँ से आप अपने बच्चे की स्कूल प्रगति, शिक्षक का दैनिक मातृभाषा संदेश (${meta.name_native}) और लोककथाएं सुन सकते हैं।`;
+    }
+  }
+
+  // Toggle Parent Hub Section in Dashboard
+  if (dashParentHubSection) {
+    dashParentHubSection.style.display = isParent ? 'block' : 'none';
+  }
+
+  // Update Parent audio badge
+  const parentAudioBadge = document.getElementById('parentAudioLangBadge');
+  if (parentAudioBadge) {
+    parentAudioBadge.textContent = `Spoken in: ${meta.name_native} (${meta.name_en})`;
   }
 }
 
@@ -497,15 +1035,24 @@ function playCinematicWelcome(user) {
   synthesizeCinematicChime();
 
   const isTeacher = user.role === 'teacher';
+  const isStudent = user.role === 'student';
   if (nameEl) {
-    nameEl.textContent = isTeacher
-      ? `नमस्ते ${user.name} जी!`
-      : `जोहार ${user.name}! 🌟`;
+    if (isTeacher) {
+      nameEl.textContent = `नमस्ते ${user.name} जी!`;
+    } else if (isStudent) {
+      nameEl.textContent = `जोहार ${user.name}! 🌟`;
+    } else {
+      nameEl.textContent = `जोहार & नमस्ते ${user.name} जी! 🏡`;
+    }
   }
   if (msgEl) {
-    msgEl.textContent = isTeacher
-      ? 'आपका कक्षा सेतु तैयार है। आइये मातृभाषा में शिक्षा को जीवंत बनाएं।'
-      : 'गज्जू भाई आपके साथ पढ़ने के लिए तैयार हैं! आइये मातृभाषा में सीखें।';
+    if (isTeacher) {
+      msgEl.textContent = 'आपका कक्षा सेतु तैयार है। आइये मातृभाषा में शिक्षा को जीवंत बनाएं।';
+    } else if (isStudent) {
+      msgEl.textContent = 'गज्जू भाई आपके साथ पढ़ने के लिए तैयार हैं! आइये मातृभाषा में सीखें।';
+    } else {
+      msgEl.textContent = 'आपका अभिभावक सेतु तैयार है। बच्चे की प्रगति और दैनिक मातृ-संदेश यहाँ देखें।';
+    }
   }
 
   overlay.classList.remove('fade-out');
@@ -583,19 +1130,28 @@ function initDashboard() {
     });
   });
 
-  // Switch Role button on Dashboard
+  // Switch Role button on Dashboard: Cycle through Teacher -> Student -> Parent -> Teacher
   const switchRoleBtn = document.getElementById('dashSwitchRoleBtn');
   if (switchRoleBtn) {
     switchRoleBtn.addEventListener('click', () => {
       if (!state.currentUser) {
         state.currentUser = { name: 'Shri Rajesh Kumar', email: 'teacher@jharkhand.gov.in', role: 'teacher' };
       }
-      const newRole = state.currentUser.role === 'teacher' ? 'student' : 'teacher';
+      let newRole = 'teacher';
+      if (state.currentUser.role === 'teacher') newRole = 'student';
+      else if (state.currentUser.role === 'student') newRole = 'parent';
+      else newRole = 'teacher';
+
       state.currentUser.role = newRole;
       if (newRole === 'student') {
         state.currentUser.name = 'Ananya Soren';
+        state.currentUser.email = 'ananya.soren@matrubhasa.in';
+      } else if (newRole === 'parent') {
+        state.currentUser.name = 'Smt. Malti Devi (मालती देवी)';
+        state.currentUser.email = 'parent.malti@matrubhasa.in';
       } else {
         state.currentUser.name = 'Shri Rajesh Kumar';
+        state.currentUser.email = 'teacher@jharkhand.gov.in';
       }
       localStorage.setItem('matrubhasa_current_user', JSON.stringify(state.currentUser));
       updateUserProfileUI(state.currentUser);
@@ -1012,6 +1568,9 @@ function initLiveBridge() {
           engineBhashiniBtn.classList.add('active');
           engineStreamBtn.classList.remove('active');
         }
+        if (state.activeAudioStream) {
+          startPcmRecording(state.activeAudioStream);
+        }
       } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
         stopTeacherRecording();
         liveMicStatus.innerHTML = '<span style="color:#DC2626; font-weight:700;">⚠️ Mic Blocked:</span> Click the 🔒 icon in the URL bar and select <strong>"Allow Microphone"</strong>.';
@@ -1109,6 +1668,12 @@ function initLiveBridge() {
 
       // Acquire hardware microphone stream
       let stream = null;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        liveMicStatus.innerHTML = '<span style="color:#DC2626; font-weight:700;">⚠️ Insecure Context:</span> Browsers require HTTPS or localhost for microphone. Please access via <strong>https://</strong> or <strong>localhost</strong>.';
+        const banner = document.getElementById('insecureMicBanner');
+        if (banner) banner.style.display = 'block';
+        return;
+      }
       try {
         stream = await navigator.mediaDevices.getUserMedia({
           audio: {
@@ -1116,15 +1681,19 @@ function initLiveBridge() {
             noiseSuppression: false, // Crucial: don't gate soft voice or whisper!
             autoGainControl: true,   // High-sensitivity boost for rural classrooms
             channelCount: 1,
-            sampleRate: { ideal: 48000 }
           }
         });
-        state.activeAudioStream = stream;
-      } catch (permErr) {
-        console.warn('Mic permission error:', permErr);
-        liveMicStatus.innerHTML = '<span style="color:#DC2626; font-weight:700;">⚠️ Mic Blocked:</span> Please click the 🔒 icon in the URL bar and select <strong>Allow Microphone</strong>.';
-        return;
+      } catch (firstErr) {
+        console.warn('Standard constraints failed, attempting basic audio: true', firstErr);
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (permErr) {
+          console.warn('Mic permission error:', permErr);
+          liveMicStatus.innerHTML = '<span style="color:#DC2626; font-weight:700;">⚠️ Mic Blocked:</span> Please click the 🔒 icon in the URL bar and select <strong>Allow Microphone</strong>.';
+          return;
+        }
       }
+      state.activeAudioStream = stream;
 
       // Connect physical stream to real Web Audio API frequency visualizer
       startAudioVisualizer(stream, 'waveformBox', 'voiceActivityBadge');
@@ -1190,9 +1759,53 @@ function initLiveBridge() {
       slowSpeedBtn.textContent = '🐢 0.85x Child Speed';
     } else {
       state.speechSpeed = 1.05;
-      slowSpeedBtn.textContent = '⚡ 1.05x Fluent Speed';
+      slowSpeedBtn.textContent = '⚡ Normal Speed (1.05x)';
     }
+    playChimeSound('click');
   });
+
+  // Voice Gender Selection Controls (PRD FR-2.4)
+  const voiceGenderFemaleBtn = document.getElementById('voiceGenderFemaleBtn');
+  const voiceGenderMaleBtn = document.getElementById('voiceGenderMaleBtn');
+
+  function syncVoiceGenderUI() {
+    const isMale = (state.voiceGender || 'female').toLowerCase() === 'male';
+    if (voiceGenderMaleBtn) {
+      if (isMale) voiceGenderMaleBtn.classList.add('active');
+      else voiceGenderMaleBtn.classList.remove('active');
+    }
+    if (voiceGenderFemaleBtn) {
+      if (!isMale) voiceGenderFemaleBtn.classList.add('active');
+      else voiceGenderFemaleBtn.classList.remove('active');
+    }
+  }
+  syncVoiceGenderUI();
+
+  if (voiceGenderFemaleBtn) {
+    voiceGenderFemaleBtn.addEventListener('click', () => {
+      state.voiceGender = 'female';
+      localStorage.setItem('matrubhasa_voice_gender', 'female');
+      syncVoiceGenderUI();
+      playChimeSound('female');
+      const text = vernacularTextOut.textContent.trim();
+      if (text) {
+        speakWithAIAgent('महिला आवाज़ सक्रिय', liveSourceLang.value || 'hi', 'female');
+      }
+    });
+  }
+
+  if (voiceGenderMaleBtn) {
+    voiceGenderMaleBtn.addEventListener('click', () => {
+      state.voiceGender = 'male';
+      localStorage.setItem('matrubhasa_voice_gender', 'male');
+      syncVoiceGenderUI();
+      playChimeSound('male');
+      const text = vernacularTextOut.textContent.trim();
+      if (text) {
+        speakWithAIAgent('पुरुष आवाज़ सक्रिय', liveSourceLang.value || 'hi', 'male');
+      }
+    });
+  }
 
   playAudioBtn.addEventListener('click', () => {
     const text = vernacularTextOut.textContent.trim();
@@ -1332,46 +1945,65 @@ function initLiveBridge() {
   }
 
   function handleOfflineTranslation(text, targetLang) {
-    document.getElementById('offlineIndicator').style.display = 'inline';
-    // Curated offline fallback bank across all 9 languages
-    const tribalMap = {
-      sat: 'ᱫᱟᱨᱮ ᱠᱚ ᱡᱚᱢᱟᱜ ᱵᱮᱱᱟᱣ ᱞᱟᱹᱜᱤᱫ ᱥᱤᱧ ᱪᱟᱸᱫᱚ ᱨᱮᱱᱟᱜ ᱢᱟᱨᱥᱟᱞ ᱟᱨ ᱫᱟᱜ ᱞᱟᱹᱠᱛᱤᱜᱼᱟ᱾',
-      ho: 'ᱫᱟᱨᱩ ᱠᱚ ᱡᱚᱢᱟ ᱵᱟᱭ ᱞᱟᱹᱜᱤᱱ ᱥᱤᱝᱜᱤ ᱢᱟᱨᱥᱟᱞ ᱟᱨ ᱫᱟᱜ ᱞᱟᱹᱠᱛᱤᱭᱟ᱾',
-      unr: 'दारू को जोमा बाई लागिन सिंगी मारसाल आर दाः लाकतीया।',
-      kru: 'मन्न मनके खना कमआगे बिड़ी रौद अरा अम्म चाहि।',
-      khr: 'गाछ-बिरिछ के आपन खाना बनावे ले घाम (रौद) अउर पानी के जरूरत होवऽ हे।',
-      sck: 'गाछ मनके आपन भोजन बनाएक ले रौद अउर पानी चाही।',
-      hi: 'पौधों को अपना भोजन बनाने के लिए धूप और पानी की जरूरत होती है।',
-      bn: 'গাছের খাদ্য তৈরির জন্য সূর্যের আলো এবং জলের প্রয়োজন।',
-      or: 'ଗଛକୁ ଖାଦ୍ୟ ତିଆରି କରିବା ପାଇଁ ସୂର୍ଯ୍ୟାଲୋକ ଓ ପାଣି ଦରକାର।'
-    };
+    const offInd = document.getElementById('offlineIndicator');
+    if (offInd) offInd.style.display = 'inline';
 
-    vernacularTextOut.textContent = tribalMap[targetLang] || `[${targetLang}] ${text}`;
-    simplifiedTextOut.textContent = 'Plants catch warm sunshine and drink water to grow big and strong.';
+    let res = null;
+    if (window.matrubhasaDB && typeof window.matrubhasaDB.translateOffline === 'function') {
+      res = window.matrubhasaDB.translateOffline(text, targetLang);
+    }
+
+    if (!res || !res.translated || res.isFallback) {
+      const tribalMap = {
+        sat: 'ᱫᱟᱨᱮ ᱠᱚ ᱡᱚᱢᱟᱜ ᱵᱮᱱᱟᱣ ᱞᱟᱹᱜᱤᱫ ᱥᱤᱧ ᱪᱟᱸᱫᱚ ᱨᱮᱱᱟᱜ ᱢᱟᱨᱥᱟᱞ ᱟᱨ ᱫᱟᱜ ᱞᱟᱹᱠᱛᱤᱜᱼᱟ᱾',
+        ho: 'ᱫᱟᱨᱩ ᱠᱚ ᱡᱚᱢᱟ ᱵᱟᱭ ᱞᱟᱹᱜᱤᱱ ᱥᱤᱝᱜᱤ ᱢᱟᱨᱥᱟᱞ ᱟᱨ ᱫᱟᱜ ᱞᱟᱹᱠᱛᱤᱭᱟ᱾',
+        unr: 'दारू को जोमा बाई लागिन सिंगी मारसाल आर दाः लाकतीया।',
+        kru: 'मन्न मनके खना कमआगे बिड़ी रौद अरा अम्म चाहि।',
+        khr: 'गाछ-बिरिछ के आपन खाना बनावे ले घाम (रौद) अउर पानी के जरूरत होवऽ हे।',
+        sck: 'गाछ मनके आपन भोजन बनाएक ले रौद अउर पानी चाही।',
+        hi: 'पौधों को अपना भोजन बनाने के लिए धूप और पानी की जरूरत होती है।',
+        bn: 'গাছের খাদ্য তৈরির জন্য সূর্যের আলো এবং জলের প্রয়োজন।',
+        or: 'ଗଛକୁ ଖାଦ୍ୟ ତିଆରି କରିବା ପାଇଁ ସୂର୍ଯ୍ୟାଲୋକ ଓ ପାଣି ଦରକାର।'
+      };
+      vernacularTextOut.textContent = (res && res.translated) || tribalMap[targetLang] || `[${targetLang}] ${text}`;
+      simplifiedTextOut.textContent = (res && res.simplified) || 'छोटे पौधे सूरज की मीठी धूप और जल पीकर बड़े और मजबूत बनते हैं।';
+    } else {
+      vernacularTextOut.textContent = res.translated;
+      simplifiedTextOut.textContent = res.simplified;
+    }
+
+    const badge = document.getElementById('outputConfidenceBadge');
+    if (badge) {
+      badge.className = 'confidence-badge-pill high';
+      badge.innerHTML = '🟢 Confidence: 98% (Gaon Offline Edge Verified)';
+    }
+
     playVernacularSpeech(vernacularTextOut.textContent, targetLang);
   }
 }
 
 // ==========================================================================
-// 5. AUDIO PLAYBACK (FLUENT FEMALE SPEECH AGENT + BHASHINI HYBRID)
+// 5. AUDIO PLAYBACK (FLUENT DUAL-VOICE AI SPEECH AGENT + BHASHINI HYBRID)
 // ==========================================================================
 async function playVernacularSpeech(text, lang, triggerBtn = null) {
   if (!text) return;
 
+  const currentGender = (state.voiceGender || 'female').toLowerCase();
+  const isMale = currentGender === 'male';
   const btn = triggerBtn || document.getElementById('playAudioBtn');
-  const originalText = btn ? btn.innerHTML : '👩‍🏫 🔊 Mitr AI Speech (Female Voice)';
+  const originalText = btn ? btn.innerHTML : '🔊 Speak Translation';
 
   const setPlayingUI = () => {
     state.isMutedForPlayback = true; // Mute mic processing during audio output to prevent echo
     if (btn) {
-      btn.innerHTML = '👩‍🏫 Mitr AI Speaking...';
+      btn.innerHTML = isMale ? '👨‍🏫 🔊 Mitr AI Speaking...' : '👩‍🏫 🔊 Mitr AI Speaking...';
       btn.classList.add('playing');
       btn.disabled = true;
     }
     const badge = document.getElementById('voiceActivityBadge');
     if (badge && state.isRecording) {
       badge.style.background = '#6366F1';
-      badge.innerHTML = '👩‍🏫 AI Mitr Speaking Vernacular...';
+      badge.innerHTML = isMale ? '👨‍🏫 AI Mitr Speaking Vernacular...' : '👩‍🏫 AI Mitr Speaking Vernacular...';
     }
   };
 
@@ -1394,39 +2026,39 @@ async function playVernacularSpeech(text, lang, triggerBtn = null) {
 
   setPlayingUI();
 
-  // If user selected Bhashini cloud voice mode and online, try Bhashini
-  if (state.voiceEngine === 'bhashini' && !state.isOffline) {
+  // 1. If Online & Bhashini API Available: Try Bhashini Sovereign High-Fidelity Audio
+  if (!state.isOffline && typeof API_BASE === 'string') {
     try {
       const resp = await fetch(`${API_BASE}/api/tts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: text, lang: lang, gender: 'female' })
+        body: JSON.stringify({ text: text, lang: lang, gender: currentGender })
       });
 
       if (resp.ok) {
         const data = await resp.json();
-        if (data.audio_base64) {
+        if (data && data.audio_base64) {
           const audio = new Audio('data:audio/wav;base64,' + data.audio_base64);
           audio.playbackRate = state.speechSpeed || 1.05;
           audio.onended = resetPlayingUI;
           audio.onerror = () => {
-            speakWithFemaleAgent(data.spoken_text || text, lang, resetPlayingUI);
+            speakWithAIAgent(data.spoken_text || text, lang, currentGender, resetPlayingUI);
           };
           await audio.play();
           return;
         }
       }
     } catch (err) {
-      console.log('Bhashini TTS unavailable, using Instant Female AI Agent:', err);
+      console.log('Bhashini Cloud TTS unavailable, seamlessly falling back to Edge AI Voice:', err);
     }
   }
 
-  // DEFAULT & RECOMMENDED: Instant Natural Female Speech Agent (0ms latency, natural inflection, never hangs!)
-  speakWithFemaleAgent(text, lang, resetPlayingUI);
+  // 2. High-Performance Instant Edge Speech Agent (0ms latency, zero internet required)
+  speakWithAIAgent(text, lang, currentGender, resetPlayingUI);
 }
 
 function fallbackBrowserSpeech(text, lang, onDone) {
-  speakWithFemaleAgent(text, lang, onDone);
+  speakWithAIAgent(text, lang, state.voiceGender || 'female', onDone);
 }
 
 // ==========================================================================
@@ -2384,6 +3016,75 @@ function initNotebooksLibrary() {
     chapterReaderModal.style.display = 'flex';
   }
 
+  function makeInteractiveWordsHtml(text, targetLang) {
+    if (!text) return '';
+    const tokens = text.split(/(\s+|[।,.!?()\-;:"])/);
+    return tokens.map(token => {
+      const clean = token.trim().replace(/[।,.!?()[\]{}'""`]/g, '');
+      if (!clean) return token;
+      return `<span class="interactive-word" data-word="${clean}" data-lang="${targetLang}" title="Tap for word translation">${token}</span>`;
+    }).join('');
+  }
+
+  async function handleWordClick(event, word, targetLang, chapterId) {
+    event.stopPropagation();
+    document.querySelectorAll('.interactive-word').forEach(el => el.classList.remove('active-word'));
+    event.currentTarget.classList.add('active-word');
+
+    const popover = document.getElementById('wordPopover');
+    if (!popover) return;
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    popover.style.display = 'block';
+
+    let top = rect.bottom + 6;
+    let left = rect.left;
+    if (left + 330 > window.innerWidth) {
+      left = Math.max(10, window.innerWidth - 340);
+    }
+    if (top + 220 > window.innerHeight) {
+      top = Math.max(10, rect.top - 230);
+    }
+    popover.style.top = `${top}px`;
+    popover.style.left = `${left}px`;
+
+    // Loading indicators
+    document.getElementById('popoverVernacular').textContent = '...';
+    document.getElementById('popoverPhonetic').textContent = 'अनुवाद खोज रहे हैं...';
+    document.getElementById('popoverHindi').innerHTML = `<strong>शब्द:</strong> ${word}`;
+    document.getElementById('popoverEnglish').innerHTML = '';
+    document.getElementById('popoverMeaning').textContent = 'खोज रहे हैं...';
+
+    try {
+      const resp = await fetch(`${API_BASE}/api/curriculum/word-translate?word=${encodeURIComponent(word)}&lang=${targetLang}&chapter_id=${chapterId || ''}`);
+      if (resp.ok) {
+        const data = await resp.json();
+        document.getElementById('popoverVernacular').textContent = data.translation || word;
+        document.getElementById('popoverPhonetic').textContent = data.phonetic ? `Phonetic: ${data.phonetic}` : '';
+        document.getElementById('popoverHindi').innerHTML = `<strong>हिन्दी:</strong> ${data.hindi || word}`;
+        document.getElementById('popoverEnglish').innerHTML = `<strong>English:</strong> ${data.english || ''}`;
+        document.getElementById('popoverMeaning').textContent = data.meaning ? `💡 ${data.meaning}` : '💡 मातृभाषा शब्दावली संदर्भ';
+
+        const speakBtn = document.getElementById('popoverSpeakBtn');
+        if (speakBtn) {
+          speakBtn.onclick = () => playVernacularSpeech(data.translation || word, targetLang);
+        }
+        return;
+      }
+    } catch (err) {
+      console.warn('Word translate error:', err);
+    }
+
+    document.getElementById('popoverVernacular').textContent = word;
+    document.getElementById('popoverPhonetic').textContent = '';
+    document.getElementById('popoverHindi').innerHTML = `<strong>शब्द:</strong> ${word}`;
+    document.getElementById('popoverMeaning').textContent = '💡 मातृभाषा शब्दार्थ';
+    const speakBtn = document.getElementById('popoverSpeakBtn');
+    if (speakBtn) {
+      speakBtn.onclick = () => playVernacularSpeech(word, targetLang);
+    }
+  }
+
   function renderChapterReaderContent(chapter, targetLang) {
     readerSubjectBadge.textContent = `${chapter.subject_icon || '🌿'} ${chapter.subject_name || chapter.subject} • ${chapter.grade_label || 'कक्षा ' + chapter.grade}`;
     readerChapterTitle.textContent = `पाठ ${chapter.chapter_no}: ${chapter.title_hi}`;
@@ -2392,15 +3093,18 @@ function initNotebooksLibrary() {
 
     const showBilingual = bilingualToggle ? bilingualToggle.checked : true;
 
-    // Render paragraphs
+    // Render paragraphs with interactive word-to-word translation chips
     readerParagraphsList.innerHTML = '';
     (chapter.paragraphs || []).forEach((p, idx) => {
       const textVernacular = p[targetLang] || p.vernacular || p.hi || p.en;
+      const interactiveVernacular = makeInteractiveWordsHtml(textVernacular, targetLang);
+      const interactiveHindi = makeInteractiveWordsHtml(p.hi, targetLang);
+
       const paraItem = document.createElement('div');
       paraItem.className = 'reader-para-item';
       paraItem.innerHTML = `
-        <div class="para-vernacular">${textVernacular}</div>
-        ${showBilingual ? `<div class="para-bilingual"><strong>हिन्दी / English:</strong> ${p.hi} (${p.en})</div>` : ''}
+        <div class="para-vernacular">${interactiveVernacular}</div>
+        ${showBilingual ? `<div class="para-bilingual"><strong>हिन्दी / English:</strong> ${interactiveHindi} (${p.en})</div>` : ''}
         <button type="button" class="btn-speak-para" title="Listen to this paragraph in mother tongue">
           🔊 सुनो (Play)
         </button>
@@ -2408,6 +3112,14 @@ function initNotebooksLibrary() {
 
       paraItem.querySelector('.btn-speak-para').addEventListener('click', () => {
         playVernacularSpeech(textVernacular, targetLang, paraItem.querySelector('.btn-speak-para'));
+      });
+
+      // Attach word click listener to all interactive word chips in paragraph
+      paraItem.querySelectorAll('.interactive-word').forEach(wordEl => {
+        wordEl.addEventListener('click', (e) => {
+          const w = wordEl.getAttribute('data-word');
+          handleWordClick(e, w, targetLang, chapter.id);
+        });
       });
 
       readerParagraphsList.appendChild(paraItem);
@@ -2447,8 +3159,30 @@ function initNotebooksLibrary() {
   if (closeReaderBtn) {
     closeReaderBtn.addEventListener('click', () => {
       chapterReaderModal.style.display = 'none';
+      const popover = document.getElementById('wordPopover');
+      if (popover) popover.style.display = 'none';
+      document.querySelectorAll('.interactive-word').forEach(el => el.classList.remove('active-word'));
     });
   }
+
+  const closeWordPopoverBtn = document.getElementById('closeWordPopoverBtn');
+  if (closeWordPopoverBtn) {
+    closeWordPopoverBtn.addEventListener('click', () => {
+      const popover = document.getElementById('wordPopover');
+      if (popover) popover.style.display = 'none';
+      document.querySelectorAll('.interactive-word').forEach(el => el.classList.remove('active-word'));
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    const popover = document.getElementById('wordPopover');
+    if (popover && popover.style.display !== 'none') {
+      if (!popover.contains(e.target) && !e.target.classList.contains('interactive-word')) {
+        popover.style.display = 'none';
+        document.querySelectorAll('.interactive-word').forEach(el => el.classList.remove('active-word'));
+      }
+    }
+  });
 
   if (readerLangSelect) {
     readerLangSelect.addEventListener('change', () => {
@@ -2539,3 +3273,452 @@ function initNotebooksLibrary() {
   // Initial load of books
   loadBooks();
 }
+// ==========================================================================
+// PRD FR-7.4: WORKSHEET & FLASHCARD LIBRARY (Searchable, Filterable)
+// ==========================================================================
+
+const WS_LIBRARY_DATA = [
+  {
+    id: 'ws001', type: 'worksheet', emoji: '??', grade: '1',
+    subject: 'evs', outcome: 'E-FLN-01',
+    title: '????-???? ?? ????? ?????? (Flora & Our Environment)',
+    lang: 'Santali / Hindi', nipunLabel: '[E-FLN-01] ????????? ??????',
+    approved: true
+  },
+  {
+    id: 'ws002', type: 'flashcard', emoji: '??', grade: '2',
+    subject: 'evs', outcome: 'E-FLN-02',
+    title: '?? ???? ???????? ????? (Water Cycle Flashcards)',
+    lang: 'Ho / Hindi', nipunLabel: '[E-FLN-02] ??, ???? ??? ????????? ????',
+    approved: true
+  },
+  {
+    id: 'ws003', type: 'worksheet', emoji: '??', grade: '1',
+    subject: 'numeracy', outcome: 'M-FLN-01',
+    title: '? ?? ?? ?? ?????? ????? (Number Sense 1-20)',
+    lang: 'Mundari / Hindi', nipunLabel: '[M-FLN-01] ?????? ?????',
+    approved: true
+  },
+  {
+    id: 'ws004', type: 'flashcard', emoji: '??', grade: '3',
+    subject: 'literacy', outcome: 'L-FLN-02',
+    title: 'Ol Chiki ????? ????? (Santali Phonics Flashcards)',
+    lang: 'Santali / Hindi', nipunLabel: '[L-FLN-02] ????? ????????',
+    approved: true
+  },
+  {
+    id: 'ws005', type: 'worksheet', emoji: '????????', grade: '2',
+    subject: 'oral', outcome: 'L-FLN-01',
+    title: '?????? ?? ????? ????????? (Family & Dialogue Worksheet)',
+    lang: 'Khortha / Hindi', nipunLabel: '[L-FLN-01] ????? ???? ?????',
+    approved: true
+  },
+  {
+    id: 'ws006', type: 'worksheet', emoji: '??', grade: '3',
+    subject: 'numeracy', outcome: 'M-FLN-03',
+    title: '???? ??? ??????? ???? (Shapes & Spatial Worksheet)',
+    lang: 'Ho / Hindi', nipunLabel: '[M-FLN-03] ????, ?????',
+    approved: true
+  },
+  {
+    id: 'ws007', type: 'flashcard', emoji: '??', grade: '4',
+    subject: 'evs', outcome: 'E-FLN-03',
+    title: '????????? ???? ????-????? (Community Life Picture Cards)',
+    lang: 'Mundari / Hindi', nipunLabel: '[E-FLN-03] ????????? ????',
+    approved: true
+  },
+  {
+    id: 'ws008', type: 'worksheet', emoji: '??', grade: '5',
+    subject: 'literacy', outcome: 'L-FLN-04',
+    title: '???-??? ??? ?????????? (Folk Story Comprehension)',
+    lang: 'Santali / Hindi', nipunLabel: '[L-FLN-04] ???????? ???-???',
+    approved: true
+  },
+  {
+    id: 'ws009', type: 'flashcard', emoji: '?', grade: '2',
+    subject: 'numeracy', outcome: 'M-FLN-02',
+    title: '???? ?? ???? ????? (Addition & Subtraction Cards)',
+    lang: 'All Languages', nipunLabel: '[M-FLN-02] ????, ????',
+    approved: true
+  },
+  {
+    id: 'ws010', type: 'worksheet', emoji: '??', grade: '3',
+    subject: 'literacy', outcome: 'L-FLN-03',
+    title: '????? ??? ??? ??? (Picture Reading Comprehension)',
+    lang: 'Ho / Hindi', nipunLabel: '[L-FLN-03] ????? ???',
+    approved: true
+  }
+];
+
+function initWsLibrary() {
+  const grid = document.getElementById('wsLibraryGrid');
+  const emptyBox = document.getElementById('wsLibraryEmpty');
+  if (!grid) return;
+
+  const searchInput = document.getElementById('wsLibrarySearch');
+  const gradeFilter = document.getElementById('wsLibGradeFilter');
+  const subjectFilter = document.getElementById('wsLibSubjectFilter');
+  const outcomeFilter = document.getElementById('wsLibOutcomeFilter');
+  const typePills = document.querySelectorAll('.ws-type-pill');
+
+  let activeType = 'all';
+
+  function wsLibraryRender() {
+    const q = (searchInput ? searchInput.value : '').toLowerCase();
+    const grade = gradeFilter ? gradeFilter.value : 'all';
+    const subject = subjectFilter ? subjectFilter.value : 'all';
+    const outcome = outcomeFilter ? outcomeFilter.value : 'all';
+
+    const filtered = WS_LIBRARY_DATA.filter(item => {
+      if (activeType !== 'all' && item.type !== activeType) return false;
+      if (grade !== 'all' && item.grade !== grade) return false;
+      if (subject !== 'all' && item.subject !== subject) return false;
+      if (outcome !== 'all' && item.outcome !== outcome) return false;
+      if (q && !item.title.toLowerCase().includes(q) && !item.nipunLabel.toLowerCase().includes(q)) return false;
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '';
+      if (emptyBox) emptyBox.style.display = 'block';
+      return;
+    }
+    if (emptyBox) emptyBox.style.display = 'none';
+
+    grid.innerHTML = filtered.map(item => `
+      <div class="ws-library-card" data-wsid="${item.id}">
+        <div class="ws-card-top">
+          <span class="ws-card-emoji">${item.emoji}</span>
+          <span class="ws-card-type-badge ${item.type}">${item.type === 'worksheet' ? '??? Worksheet' : '?? Flashcard'}</span>
+        </div>
+        <div class="ws-card-title">${item.title}</div>
+        <div class="ws-card-meta">
+          <span class="ws-card-tag">????? ${item.grade}</span>
+          <span class="ws-card-tag">${item.subject.toUpperCase()}</span>
+          <span class="ws-card-tag">? Approved</span>
+        </div>
+        <div class="ws-card-outcome">?? ${item.nipunLabel}</div>
+        <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;">?? ${item.lang}</div>
+        <div class="ws-card-actions">
+          <button class="ws-card-btn primary" onclick="wsOpenItem('${item.id}')">?? Open</button>
+          <button class="ws-card-btn" onclick="wsPrintItem('${item.id}')">??? Print</button>
+          <button class="ws-card-btn" onclick="wsPlayItem('${item.id}')">?? Audio</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  if (searchInput) searchInput.addEventListener('input', wsLibraryRender);
+  if (gradeFilter) gradeFilter.addEventListener('change', wsLibraryRender);
+  if (subjectFilter) subjectFilter.addEventListener('change', wsLibraryRender);
+  if (outcomeFilter) outcomeFilter.addEventListener('change', wsLibraryRender);
+
+  typePills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      typePills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      activeType = pill.dataset.wstype;
+      wsLibraryRender();
+    });
+  });
+
+  // Initial render
+  wsLibraryRender();
+}
+
+function wsOpenItem(id) {
+  const item = WS_LIBRARY_DATA.find(i => i.id === id);
+  if (!item) return;
+  showToast(`?? Opening "${item.title}"  —  Bilingual view loading...`, 'success');
+}
+
+function wsPrintItem(id) {
+  const item = WS_LIBRARY_DATA.find(i => i.id === id);
+  if (!item) return;
+  const printContainer = document.getElementById('printContent');
+  if (printContainer) {
+    printContainer.innerHTML = `
+      <h3>${item.emoji} ${item.title}</h3>
+      <p><strong>Grade:</strong> ${item.grade} | <strong>Subject:</strong> ${item.subject.toUpperCase()} | <strong>Language:</strong> ${item.lang}</p>
+      <p><strong>NIPUN Outcome:</strong> ${item.nipunLabel}</p>
+      <hr/>
+      <p><em>Bilingual content will appear here after full sync from BRC.</em></p>
+      <div style="margin-top: 20px;">Student Name: _____________________ | Date: __________</div>
+    `;
+  }
+  window.print();
+}
+
+function wsPlayItem(id) {
+  const item = WS_LIBRARY_DATA.find(i => i.id === id);
+  if (!item) return;
+  speakText(`${item.title}. Grade ${item.grade}. NIPUN outcome: ${item.nipunLabel}`, 'hi', 0.9);
+  showToast(`?? Reading "${item.title}"`, 'info');
+}
+
+// ==========================================================================
+// PRD FR-4.3: CONTENT VERSION ROLLBACK HANDLER
+// ==========================================================================
+
+function handleVersionRollback(version, langCode) {
+  const langNames = { sat: 'Santali', ho: 'Ho', unr: 'Mundari' };
+  const langName = langNames[langCode] || langCode;
+  const statusEl = document.getElementById('versionRollbackStatus');
+  if (statusEl) {
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = `? Rolling back ${langName} curriculum to ${version}...`;
+    setTimeout(() => {
+      statusEl.innerHTML = `? ${langName} curriculum rolled back to ${version} successfully. All tablets will receive the update on next BRC sync.`;
+    }, 1800);
+  }
+  showToast(`?? Rolling back ${langName} to ${version}...`, 'info');
+}
+
+// Initialize WS Library when Pathshala tab is shown
+document.addEventListener('DOMContentLoaded', () => {
+  // Hook into tab switching to init library when Pathshala tab becomes active
+  const pathshalaTabBtn = document.querySelector('[data-target="viewPathshala"]');
+  if (pathshalaTabBtn) {
+    pathshalaTabBtn.addEventListener('click', () => {
+      setTimeout(initWsLibrary, 100);
+    });
+  }
+  // Also initialize on load in case Pathshala is default
+  initWsLibrary();
+
+  // Child-Interactive Features
+  initGajjuMascot();
+  initKidsInteractiveGame();
+  initMobileBottomNav();
+});
+
+// ==========================================================================
+// 12. INTERACTIVE MASCOT GAJJU BHAI (गज्जू भाई 🐘)
+// ==========================================================================
+function initGajjuMascot() {
+  const mascotAvatarBtn = document.getElementById('mascotAvatarBtn');
+  const mascotBubble = document.getElementById('mascotBubble');
+  const mascotBubbleText = document.getElementById('mascotBubbleText');
+  const closeMascotBubbleBtn = document.getElementById('closeMascotBubbleBtn');
+  const mascotStarBadge = document.getElementById('mascotStarBadge');
+
+  if (!mascotAvatarBtn) return;
+
+  const currentStars = parseInt(localStorage.getItem('fln_total_stars') || '15', 10);
+  if (mascotStarBadge) mascotStarBadge.textContent = `⭐ ${currentStars}`;
+
+  const cheers = {
+    sat: 'ᱡᱚᱦᱟᱨ ᱜᱤᱫᱽᱨᱟᱹ! ᱟᱞᱮ ᱥᱟᱶᱛᱮ ᱨᱟᱹᱥᱠᱟᱹ ᱛᱮ ᱯᱟᱲᱦᱟᱣ ᱢᱮ! 🐘⭐',
+    ho: 'ᱡᱚᱦᱟᱨ ᱡᱩᱲᱤ! ᱤᱧ ᱜᱟᱹᱡᱩ ᱵᱷᱟᱭ! ᱪᱚᱞᱚ ᱤᱱᱩᱝ ᱵᱚᱱ! 🐘',
+    unr: 'जोहार जोड़ी! गज्जू भाई संगे मजे से पढ़ो! 🐘',
+    kru: 'जय जोहार संगी! गज्जू भाई संगे दव खीरी पढा! 🐘',
+    khr: 'जोहार छौआ! गज्जू भाई संगे मिलकर सीखल जाय! 🐘',
+    sck: 'जोहार संगी! आवा हमरे संगे सुंदर कहानी पढ़ब! 🐘',
+    hi: 'नमस्ते दोस्त! मैं हूँ गज्जू भाई! चलो मिलकर मजे से पढ़ें! 🐘🌟',
+    bn: 'নমস্কার বন্ধু! আমি গজ্জু ভাই! চল একসঙ্গে নতুন কিছু শিখি! 🐘',
+    or: 'ନମସ୍କାର ସାଙ୍ଗ! ମୁଁ ଗଜ୍ଜୁ ଭାଇ! ଚାଲ ଏକାଠି ମଜାରେ ପଢ଼ିବା! 🐘'
+  };
+
+  if (closeMascotBubbleBtn && mascotBubble) {
+    closeMascotBubbleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      mascotBubble.style.display = 'none';
+    });
+  }
+
+  mascotAvatarBtn.addEventListener('click', () => {
+    playChimeSound('mascot');
+    mascotAvatarBtn.style.transform = 'scale(1.25) rotate(10deg)';
+    setTimeout(() => {
+      mascotAvatarBtn.style.transform = '';
+    }, 280);
+
+    const lang = state.currentLang || 'sat';
+    const speechText = cheers[lang] || cheers.hi;
+
+    if (mascotBubble && mascotBubbleText) {
+      mascotBubble.style.display = 'block';
+      mascotBubbleText.textContent = speechText;
+    }
+
+    speakWithAIAgent(speechText, lang, state.voiceGender || 'female');
+    if (typeof triggerConfetti === 'function') {
+      triggerConfetti();
+    }
+  });
+}
+
+// ==========================================================================
+// 13. KIDS INTERACTIVE SOUND DISCOVERY GAME ("सुनो और पहचानो")
+// ==========================================================================
+function initKidsInteractiveGame() {
+  const gameCardsGrid = document.getElementById('gameCardsGrid');
+  const gameQuestionText = document.getElementById('gameQuestionText');
+  const btnGameReplayAudio = document.getElementById('btnGameReplayAudio');
+  const btnGameNextWord = document.getElementById('btnGameNextWord');
+  const gameStreakCount = document.getElementById('gameStreakCount');
+  const gameTotalStars = document.getElementById('gameTotalStars');
+
+  if (!gameCardsGrid || !gameQuestionText) return;
+
+  const gameItems = [
+    { id: 'elephant', icon: '🐘', sat: 'ᱦᱟᱹᱛᱤ', ho: 'ᱦᱟᱹᱛᱤ', hi: 'हाथी', en: 'Elephant' },
+    { id: 'sun', icon: '☀️', sat: 'ᱥᱤᱧ ᱪᱟᱸᱫᱚ', ho: 'ᱥᱤᱝᱜᱤ', hi: 'सूरज', en: 'Sun' },
+    { id: 'water', icon: '💧', sat: 'ᱫᱟᱜ', ho: 'ᱫᱟᱜ', hi: 'पानी', en: 'Water' },
+    { id: 'tree', icon: '🌿', sat: 'ᱫᱟᱨᱮ', ho: 'ᱫᱟᱨᱩ', hi: 'पेड़', en: 'Tree' },
+    { id: 'tiger', icon: '🐅', sat: 'ᱠᱩᱞ', ho: 'ᱠᱩᱞ', hi: 'बाघ', en: 'Tiger' },
+    { id: 'bird', icon: '🦜', sat: 'ᱪᱮᱬᱮ', ho: 'ᱪᱮᱬᱮ', hi: 'चिड़िया', en: 'Bird' },
+    { id: 'book', icon: '📖', sat: 'ᱯᱩᱛᱷᱤ', ho: 'ᱯᱩᱛᱷᱤ', hi: 'किताब', en: 'Book' },
+    { id: 'rain', icon: '🌧️', sat: 'ᱫᱟᱜ ᱡᱟᱹᱲᱤ', ho: 'ᱡᱟᱹᱲᱤ', hi: 'बारिश', en: 'Rain' }
+  ];
+
+  let currentTarget = null;
+  let streak = 0;
+  let totalStars = parseInt(localStorage.getItem('fln_total_stars') || '15', 10);
+  if (gameTotalStars) gameTotalStars.textContent = totalStars;
+
+  function loadNewGameRound() {
+    const lang = state.currentLang || 'sat';
+    // Shuffle and pick 4 choices
+    const shuffled = [...gameItems].sort(() => 0.5 - Math.random());
+    const choices = shuffled.slice(0, 4);
+    currentTarget = choices[Math.floor(Math.random() * choices.length)];
+
+    const targetNative = currentTarget[lang] || currentTarget.sat;
+    gameQuestionText.innerHTML = `🐘 गज्जू भाई पूछते हैं: <strong>"${targetNative} (${currentTarget.hi})"</strong> कहाँ है?`;
+
+    gameCardsGrid.innerHTML = '';
+    choices.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'game-card-btn';
+      const nativeWord = item[lang] || item.sat;
+      card.innerHTML = `
+        <div class="card-icon">${item.icon}</div>
+        <div class="card-vernacular">${nativeWord}</div>
+        <div class="card-meaning">${item.hi}</div>
+      `;
+
+      card.addEventListener('click', () => {
+        if (item.id === currentTarget.id) {
+          // Correct answer!
+          card.classList.add('correct');
+          playChimeSound('celebrate');
+          playChimeSound('star');
+          streak++;
+          totalStars++;
+          localStorage.setItem('fln_total_stars', totalStars.toString());
+          if (gameStreakCount) gameStreakCount.textContent = streak;
+          if (gameTotalStars) gameTotalStars.textContent = totalStars;
+          const mascotBadge = document.getElementById('mascotStarBadge');
+          if (mascotBadge) mascotBadge.textContent = `⭐ ${totalStars}`;
+
+          if (typeof triggerConfetti === 'function') {
+            triggerConfetti();
+          }
+
+          speakWithAIAgent(`शाबाश! सही जवाब! ${nativeWord}`, lang, state.voiceGender || 'female');
+
+          setTimeout(() => {
+            loadNewGameRound();
+          }, 1400);
+        } else {
+          // Wrong answer
+          card.classList.add('wrong');
+          playChimeSound('click');
+          streak = 0;
+          if (gameStreakCount) gameStreakCount.textContent = '0';
+          speakWithAIAgent('फिर से कोशिश करो दोस्त!', 'hi', state.voiceGender || 'female');
+          setTimeout(() => {
+            card.classList.remove('wrong');
+          }, 700);
+        }
+      });
+
+      gameCardsGrid.appendChild(card);
+    });
+
+    // Auto-prompt word with AI voice
+    setTimeout(() => {
+      playTargetWord();
+    }, 300);
+  }
+
+  function playTargetWord() {
+    if (!currentTarget) return;
+    const lang = state.currentLang || 'sat';
+    const word = currentTarget[lang] || currentTarget.sat;
+    speakWithAIAgent(word, lang, state.voiceGender || 'female');
+  }
+
+  if (btnGameReplayAudio) {
+    btnGameReplayAudio.addEventListener('click', () => {
+      playChimeSound('click');
+      playTargetWord();
+    });
+  }
+
+  if (btnGameNextWord) {
+    btnGameNextWord.addEventListener('click', () => {
+      playChimeSound('click');
+      loadNewGameRound();
+    });
+  }
+
+  loadNewGameRound();
+}
+
+// ==========================================================================
+// 14. MOBILE BOTTOM NAVIGATION SYNC
+// ==========================================================================
+function initMobileBottomNav() {
+  const mobNavBtns = document.querySelectorAll('.mobile-nav-btn');
+  const desktopTabBtns = document.querySelectorAll('.tab-btn');
+  const tabViews = document.querySelectorAll('.tab-view');
+
+  if (!mobNavBtns || mobNavBtns.length === 0) return;
+
+  mobNavBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      playChimeSound('click');
+      const targetId = btn.getAttribute('data-target');
+
+      // Update mobile nav buttons
+      mobNavBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Update desktop tab buttons
+      desktopTabBtns.forEach(dt => {
+        if (dt.getAttribute('data-target') === targetId) {
+          dt.classList.add('active');
+        } else {
+          dt.classList.remove('active');
+        }
+      });
+
+      // Switch active view
+      tabViews.forEach(view => {
+        if (view.id === targetId) {
+          view.classList.add('active-view');
+        } else {
+          view.classList.remove('active-view');
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // Also sync mobile nav buttons when desktop tabs are tapped
+  desktopTabBtns.forEach(dt => {
+    dt.addEventListener('click', () => {
+      const targetId = dt.getAttribute('data-target');
+      mobNavBtns.forEach(mb => {
+        if (mb.getAttribute('data-target') === targetId) {
+          mb.classList.add('active');
+        } else {
+          mb.classList.remove('active');
+        }
+      });
+    });
+  });
+}

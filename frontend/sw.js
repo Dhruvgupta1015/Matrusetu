@@ -1,11 +1,12 @@
 // Matrubhasa AI — Service Worker for 100% Offline Primary School Support
-const CACHE_NAME = 'matrubhasa-v2.0';
+const CACHE_NAME = 'matrubhasa-v2.1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
   './app.js',
   './offline_db.js',
+  './i18n.js',
   './manifest.json',
   'https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Ol+Chiki:wght@500;700&family=Noto+Sans+Bengali:wght@500;700&family=Noto+Sans+Oriya:wght@500;700&display=swap'
 ];
