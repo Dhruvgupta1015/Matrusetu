@@ -2112,8 +2112,14 @@ body {
   justify-content: center;
   padding: 24px;
   color: #FFFFFF;
-  overflow: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   animation: cinematicFadeIn 0.6s ease forwards;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 @keyframes cinematicFadeIn {
@@ -2469,6 +2475,104 @@ body {
   height: 100%;
   background: linear-gradient(90deg, var(--sunny-gold), #10B981);
   transition: width 3.5s linear;
+}
+
+.cinematic-touch-hint {
+  font-size: 0.85rem;
+  color: #FDE047;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+  animation: pulseTouchHint 1.8s infinite ease-in-out;
+  text-shadow: 0 0 10px rgba(253, 224, 71, 0.4);
+}
+
+@keyframes pulseTouchHint {
+  0%, 100% {
+    opacity: 0.65;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+/* Tablet & Mobile (iPhone / iPad / Android) responsiveness for Welcome & Login */
+@media (max-width: 768px) {
+  .cinematic-overlay {
+    padding: 16px 12px;
+  }
+  .cinematic-glow-title {
+    font-size: 2.2rem;
+  }
+  .cinematic-vernacular-title {
+    font-size: 1.4rem;
+  }
+  .cinematic-ring-container {
+    width: 84px;
+    height: 84px;
+    margin-bottom: 12px;
+  }
+  .cinematic-logo-badge {
+    width: 52px;
+    height: 52px;
+    font-size: 2rem;
+  }
+  .cinematic-greeting-card {
+    padding: 12px 14px;
+    margin-top: 14px;
+    gap: 12px;
+    max-width: 100%;
+  }
+  .cinematic-mascot {
+    font-size: 1.8rem;
+  }
+  .cinematic-soundwaves {
+    margin: 12px 0 10px 0;
+  }
+  .cinematic-lang-chips {
+    gap: 4px;
+    justify-content: center;
+  }
+  .cinematic-chip {
+    padding: 4px 8px;
+    font-size: 0.78rem;
+  }
+  .btn-cinematic-proceed {
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+  .auth-card {
+    padding: 20px 14px;
+    max-height: 94vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 480px) {
+  .cinematic-glow-title {
+    font-size: 1.9rem;
+  }
+  .cinematic-vernacular-title {
+    font-size: 1.25rem;
+  }
+  .cinematic-prefix {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+  }
+  .cinematic-tagline {
+    font-size: 0.8rem;
+  }
+  .btn-cinematic-proceed {
+    padding: 10px 20px;
+    font-size: 0.85rem;
+  }
 }
 
 /* ==========================================================================
@@ -5106,3 +5210,165 @@ body {
     right: 14px;
   }
 }
+
+/* Streamlined Single Top Navbar (Eliminates bulky stacked headers) */
+.app-top-nav {
+  background: var(--gov-navy);
+  color: #FFFFFF;
+  padding: 10px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  border-bottom: 2px solid var(--national-saffron);
+}
+
+.top-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.top-brand-logo {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--national-saffron), #FFB703);
+  color: #FFFFFF;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.top-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-brand-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.top-brand-title span {
+  font-weight: 500;
+  color: #E2E8F0;
+  font-size: 0.92rem;
+}
+
+.top-brand-badge {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.top-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Space-Saving Clean & Attractive Footer */
+.app-footer {
+  background: var(--surface-white);
+  border-top: 1px solid var(--border-subtle);
+  padding: 14px 24px;
+  margin-top: 36px;
+}
+
+.footer-content-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.footer-bullet {
+  opacity: 0.35;
+  margin: 0 4px;
+}
+
+.footer-policy-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.policy-pill-btn {
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.policy-pill-btn:hover {
+  background: #E2E8F0;
+  color: var(--gov-navy);
+  border-color: #CBD5E1;
+}
+
+.policy-card {
+  max-width: 540px !important;
+  text-align: left;
+}
+
+.policy-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.policy-modal-header h3 {
+  font-size: 1.05rem;
+  color: var(--gov-navy);
+  margin: 0;
+}
+
+.policy-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.policy-modal-body {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #334155;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.policy-modal-footer {
+  margin-top: 14px;
+  text-align: right;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px;
+}
+
+
+

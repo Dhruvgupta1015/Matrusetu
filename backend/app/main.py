@@ -44,10 +44,20 @@ except ImportError:
     BhashiniClient = None
     BhashiniError = Exception
 
+from .db.init_db import init_db
+from .routers import (
+    auth_router,
+    content_router,
+    sync_router,
+    progress_router,
+    admin_router,
+    remote_bridge_router,
+)
+
 app = FastAPI(
     title="Matrubhasa AI — Vernacular Pedagogy & Real-Time Translation API",
     description="AI-Powered Vernacular Pedagogy and Real-Time Translation Tool for Mother Tongue-Based Primary Education (SIH26042)",
-    version="2.0.0"
+    version="3.0.0"
 )
 
 app.add_middleware(
@@ -56,6 +66,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+def on_startup():
+    init_db()
+
+# Mount PRD v3.0 REST API contract under /api/v1
+app.include_router(auth_router, prefix="/api/v1")
+app.include_router(content_router, prefix="/api/v1")
+app.include_router(sync_router, prefix="/api/v1")
+app.include_router(progress_router, prefix="/api/v1")
+app.include_router(admin_router, prefix="/api/v1")
+app.include_router(remote_bridge_router, prefix="/api/v1")
 
 _bhashini_client = None
 
@@ -807,7 +829,14 @@ frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..
 def read_index():
     index_path = os.path.join(frontend_dir, "index.html")
     if os.path.exists(index_path):
-        return FileResponse(index_path)
+        return FileResponse(
+            index_path,
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
     return {"message": "Matrubhasa AI Backend Active"}
 
 if os.path.exists(frontend_dir):
