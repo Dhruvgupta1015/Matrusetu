@@ -188,6 +188,7 @@ class BhashiniClient:
                 {
                     "taskType": "asr",
                     "config": cfg,
+                    
                 }
             ],
             "inputData": {"audio": [{"audioContent": audio_base64}]},
