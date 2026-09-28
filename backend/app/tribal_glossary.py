@@ -336,3 +336,44 @@ def ol_chiki_to_phonetic(text: str) -> str:
         return text
     converted = "".join(OL_CHIKI_TO_DEVANAGARI.get(c, c) for c in text)
     return converted
+
+
+def reverse_translate_tribal(text: str, source_lang: str = "sat") -> tuple[str, float, bool]:
+    """
+    Translates tribal/vernacular student input back into standard Hindi for teacher comprehension (PRD FR-1.2 & FR-3.2).
+    Returns (translated_hindi, confidence, is_offline).
+    """
+    clean_text = text.strip()
+    if not clean_text:
+        return "", 1.0, True
+
+    # 1. Exact or substring match in common classroom sentences
+    for phrase in COMMON_LESSON_SENTENCES:
+        src_val = phrase.get(source_lang, "")
+        if src_val and (clean_text in src_val or src_val in clean_text):
+            return phrase["hi"], 0.98, True
+
+    # 2. Vocabulary word matching
+    words = clean_text.split()
+    translated_words = []
+    matched = 0
+
+    for w in words:
+        w_clean = w.strip(",.!?()[]{}।")
+        found = False
+        for item in CURATED_VOCABULARY:
+            item_src = item.get(source_lang, "")
+            if w_clean and (w_clean in item_src or item_src in w_clean):
+                hi_word = item["hi"].split()[0].strip("()/")
+                translated_words.append(hi_word)
+                matched += 1
+                found = True
+                break
+        if not found:
+            # Ol Chiki phonetic transliteration if available
+            phon = ol_chiki_to_phonetic(w_clean)
+            translated_words.append(phon if phon != w_clean else w)
+
+    confidence = round(min(0.98, 0.70 + (matched / max(len(words), 1)) * 0.28), 2)
+    return " ".join(translated_words), confidence, True
+

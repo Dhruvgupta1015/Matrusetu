@@ -54,12 +54,29 @@ GLOBAL_WORD_DICTIONARY: Dict[str, Dict[str, str]] = {
     "hundred": {"en": "Hundred (100)", "hi": "सौ / शतक (१००)", "phonetic": "Sae", "sat": "ᱥᱟᱭ", "ho": "ᱥᱟᱭ", "unr": "साय", "kru": "सय", "khr": "सउ", "sck": "सउ", "bn": "একশত", "or": "ଶହେ", "meaning": "संख्या १००"}
 }
 
+
+# NIPUN Bharat Foundational Learning Outcomes Framework (NEP 2020 Aligned)
+NIPUN_FLN_FRAMEWORK = {
+    "L-FLN-01": {"domain": "Oral Language", "title_hi": "मौखिक भाषा विकास एवं पारिवारिक संवाद", "title_en": "Oral Language Development & Dialogue"},
+    "L-FLN-02": {"domain": "Phonics & Word Reading", "title_hi": "ध्वनि जागरूकता एवं वर्ण-ध्वनि संबंध", "title_en": "Phonological Awareness & Phonics"},
+    "L-FLN-03": {"domain": "Reading Comprehension", "title_hi": "चित्र पठन एवं प्रारंभिक समझ", "title_en": "Picture Reading & Emergent Comprehension"},
+    "L-FLN-04": {"domain": "Folk Literature & Expression", "title_hi": "मातृभाषा लोक-कथा एवं अभिव्यक्ति", "title_en": "Vernacular Folk Narrative & Expression"},
+    "M-FLN-01": {"domain": "Foundational Numeracy", "title_hi": "मूर्त वस्तुओं से संख्या ज्ञान १-२०", "title_en": "Concrete Number Sense 1-20"},
+    "M-FLN-02": {"domain": "Applied Arithmetic", "title_hi": "जोड़, घटाव एवं स्थानीय मान", "title_en": "Basic Addition, Subtraction & Place Value"},
+    "M-FLN-03": {"domain": "Spatial & Measurement", "title_hi": "आकार, स्थान एवं स्थानीय मापन", "title_en": "Shapes, Space & Local Measurement"},
+    "E-FLN-01": {"domain": "Nature & Living", "title_hi": "प्राकृतिक परिवेश एवं पेड़-पौधे", "title_en": "Natural Environment & Flora"},
+    "E-FLN-02": {"domain": "Water & Weather", "title_hi": "जल, मौसम एवं प्राकृतिक चक्र", "title_en": "Water Cycle & Weather Dynamics"},
+    "E-FLN-03": {"domain": "Community & Culture", "title_hi": "सामुदायिक जीवन एवं स्थानीय संस्कृति", "title_en": "Community Life & Local Heritage"}
+}
+
 CURRICULUM_CHAPTERS: List[Dict] = [
     # =========================================================================
     # CLASS 1 (Grade 1 / Bal Vatika)
     # =========================================================================
     {
         "id": "cl1_evs_ch1",
+        "nipun_code": "L-FLN-01",
+        "nipun_outcome": "मौखिक भाषा विकास एवं पारिवारिक संवाद (Oral Language & Family Dialogue)",
         "grade": 1,
         "grade_label": "कक्षा 1 (Class 1)",
         "subject": "evs",
@@ -110,6 +127,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl1_evs_ch2",
+        "nipun_code": "E-FLN-01",
+        "nipun_outcome": "प्राकृतिक परिवेश एवं पेड़-पौधे (Flora & Environment)",
         "grade": 1,
         "grade_label": "कक्षा 1 (Class 1)",
         "subject": "evs",
@@ -146,6 +165,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl1_math_ch1",
+        "nipun_code": "M-FLN-01",
+        "nipun_outcome": "मूर्त वस्तुओं से संख्या ज्ञान १-१० (Concrete Numbers 1-10)",
         "grade": 1,
         "grade_label": "कक्षा 1 (Class 1)",
         "subject": "math",
@@ -182,6 +203,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl1_hindi_ch1",
+        "nipun_code": "L-FLN-02",
+        "nipun_outcome": "ध्वनि जागरूकता एवं लयबद्ध बालगीत (Phonological Awareness & Rhyme)",
         "grade": 1,
         "grade_label": "कक्षा 1 (Class 1)",
         "subject": "hindi",
@@ -217,6 +240,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl1_eng_ch1",
+        "nipun_code": "L-FLN-01",
+        "nipun_outcome": "बुनियादी आत्म-परिचय एवं शब्दावली (Self-Expression & Vocabulary)",
         "grade": 1,
         "grade_label": "कक्षा 1 (Class 1)",
         "subject": "english",
@@ -256,6 +281,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     # =========================================================================
     {
         "id": "cl2_evs_ch1",
+        "nipun_code": "E-FLN-03",
+        "nipun_outcome": "सामुदायिक मददगार एवं ग्रामीण जीवन (Community Helpers)",
         "grade": 2,
         "grade_label": "कक्षा 2 (Class 2)",
         "subject": "evs",
@@ -291,6 +318,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl2_evs_ch2",
+        "nipun_code": "E-FLN-02",
+        "nipun_outcome": "जल संरक्षण एवं दैनिक उपयोग (Water Conservation)",
         "grade": 2,
         "grade_label": "कक्षा 2 (Class 2)",
         "subject": "evs",
@@ -326,6 +355,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl2_math_ch1",
+        "nipun_code": "M-FLN-03",
+        "nipun_outcome": "आकार, स्थान एवं ज्यामितीय अवलोकन (Shapes & Spatial Sense)",
         "grade": 2,
         "grade_label": "कक्षा 2 (Class 2)",
         "subject": "math",
@@ -361,6 +392,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl2_hindi_ch1",
+        "nipun_code": "L-FLN-02",
+        "nipun_outcome": "वर्ण-मात्रा पहचान एवं कविता पठन (Reading Fluency & Phonics)",
         "grade": 2,
         "grade_label": "कक्षा 2 (Class 2)",
         "subject": "hindi",
@@ -396,6 +429,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl2_eng_ch1",
+        "nipun_code": "L-FLN-01",
+        "nipun_outcome": "कक्षा निर्देश एवं दैनिक वार्तालाप (Classroom Greetings & Commands)",
         "grade": 2,
         "grade_label": "कक्षा 2 (Class 2)",
         "subject": "english",
@@ -435,6 +470,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     # =========================================================================
     {
         "id": "cl3_evs_ch1",
+        "nipun_code": "E-FLN-01",
+        "nipun_outcome": "जीव-जंतुओं का आवास एवं स्वभाव (Animal Habitats & Habits)",
         "grade": 3,
         "grade_label": "कक्षा 3 (Class 3)",
         "subject": "evs",
@@ -470,6 +507,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl3_evs_ch2",
+        "nipun_code": "E-FLN-01",
+        "nipun_outcome": "पौधों के भाग एवं प्रकाश-संश्लेषण (Plant Parts & Sunlight)",
         "grade": 3,
         "grade_label": "कक्षा 3 (Class 3)",
         "subject": "evs",
@@ -505,6 +544,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl3_math_ch1",
+        "nipun_code": "M-FLN-02",
+        "nipun_outcome": "संख्या विस्तार एवं स्थानीय मान १०० तक (Place Value & Skip Counting)",
         "grade": 3,
         "grade_label": "कक्षा 3 (Class 3)",
         "subject": "math",
@@ -540,6 +581,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl3_hindi_ch1",
+        "nipun_code": "L-FLN-03",
+        "nipun_outcome": "भावपूर्ण पठन एवं शब्द-रचना (Expressive Reading & Synonyms)",
         "grade": 3,
         "grade_label": "कक्षा 3 (Class 3)",
         "subject": "hindi",
@@ -575,6 +618,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl3_eng_ch1",
+        "nipun_code": "L-FLN-03",
+        "nipun_outcome": "वर्णनात्मक गद्यांश पठन (Descriptive Paragraph Comprehension)",
         "grade": 3,
         "grade_label": "कक्षा 3 (Class 3)",
         "subject": "english",
@@ -614,6 +659,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     # =========================================================================
     {
         "id": "cl4_evs_ch1",
+        "nipun_code": "E-FLN-03",
+        "nipun_outcome": "यातायात के साधन एवं भौगोलिक विविधता (Transport & Geography)",
         "grade": 4,
         "grade_label": "कक्षा 4 (Class 4)",
         "subject": "evs",
@@ -649,6 +696,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl4_evs_ch2",
+        "nipun_code": "E-FLN-01",
+        "nipun_outcome": "पर्यावरण संरक्षण एवं चिपको इतिहास (Environmental Stewardship)",
         "grade": 4,
         "grade_label": "कक्षा 4 (Class 4)",
         "subject": "evs",
@@ -684,6 +733,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl4_math_ch1",
+        "nipun_code": "M-FLN-03",
+        "nipun_outcome": "त्रिविमीय आकृतियाँ, पैटर्न एवं जाली (3D Shapes & Spatial Patterns)",
         "grade": 4,
         "grade_label": "कक्षा 4 (Class 4)",
         "subject": "math",
@@ -719,6 +770,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl4_hindi_ch1",
+        "nipun_code": "L-FLN-04",
+        "nipun_outcome": "कल्पनाशीलता एवं काव्य अभिव्यक्ति (Poetic Imagery & Metaphors)",
         "grade": 4,
         "grade_label": "कक्षा 4 (Class 4)",
         "subject": "hindi",
@@ -754,6 +807,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl4_eng_ch1",
+        "nipun_code": "L-FLN-02",
+        "nipun_outcome": "ध्वनि उच्चारण एवं दैनिक आदतें (Pronunciation & Morning Routines)",
         "grade": 4,
         "grade_label": "कक्षा 4 (Class 4)",
         "subject": "english",
@@ -793,6 +848,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     # =========================================================================
     {
         "id": "cl5_evs_ch1",
+        "nipun_code": "E-FLN-01",
+        "nipun_outcome": "संवेदी अंग एवं पशु-सूँघने की शक्ति (Animal Senses & Adaptations)",
         "grade": 5,
         "grade_label": "कक्षा 5 (Class 5)",
         "subject": "evs",
@@ -828,6 +885,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl5_evs_ch2",
+        "nipun_code": "E-FLN-03",
+        "nipun_outcome": "पारंपरिक ज्ञान एवं जनजातीय धरोहर (Indigenous Wisdom & Folklore)",
         "grade": 5,
         "grade_label": "कक्षा 5 (Class 5)",
         "subject": "evs",
@@ -863,6 +922,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl5_math_ch1",
+        "nipun_code": "M-FLN-02",
+        "nipun_outcome": "व्यावहारिक गणना, मुद्रा एवं वजन (Applied Mathematics & Market Math)",
         "grade": 5,
         "grade_label": "कक्षा 5 (Class 5)",
         "subject": "math",
@@ -898,6 +959,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl5_hindi_ch1",
+        "nipun_code": "L-FLN-04",
+        "nipun_outcome": "लोककथा विश्लेषण एवं समस्या-समाधान (Folk Tale Analysis & Wisdom)",
         "grade": 5,
         "grade_label": "कक्षा 5 (Class 5)",
         "subject": "hindi",
@@ -933,6 +996,8 @@ CURRICULUM_CHAPTERS: List[Dict] = [
     },
     {
         "id": "cl5_eng_ch1",
+        "nipun_code": "L-FLN-03",
+        "nipun_outcome": "ऋतु चक्र एवं सामाजिक उत्सव (Seasons & Community Celebrations)",
         "grade": 5,
         "grade_label": "कक्षा 5 (Class 5)",
         "subject": "english",
@@ -986,6 +1051,8 @@ def get_all_books(grade: Optional[int] = None, subject: Optional[str] = None) ->
             "chapter_no": ch["chapter_no"],
             "title_hi": ch["title_hi"],
             "title_en": ch["title_en"],
+            "nipun_code": ch.get("nipun_code", "L-FLN-01"),
+            "nipun_outcome": ch.get("nipun_outcome", ""),
             "concept_summary": ch["concept_summary"],
             "total_paragraphs": len(ch["paragraphs"]),
             "keywords_count": len(ch["keywords"])
@@ -1034,6 +1101,8 @@ def get_chapter_by_id(chapter_id: str, target_lang: str = "sat") -> Optional[Dic
                 "chapter_no": ch["chapter_no"],
                 "title_hi": ch["title_hi"],
                 "title_en": ch["title_en"],
+                "nipun_code": ch.get("nipun_code", "L-FLN-01"),
+                "nipun_outcome": ch.get("nipun_outcome", ""),
                 "concept_summary": ch["concept_summary"],
                 "target_lang": target_lang,
                 "paragraphs": adapted_paragraphs,
