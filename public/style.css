@@ -2112,8 +2112,14 @@ body {
   justify-content: center;
   padding: 24px;
   color: #FFFFFF;
-  overflow: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   animation: cinematicFadeIn 0.6s ease forwards;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 @keyframes cinematicFadeIn {
@@ -2469,6 +2475,104 @@ body {
   height: 100%;
   background: linear-gradient(90deg, var(--sunny-gold), #10B981);
   transition: width 3.5s linear;
+}
+
+.cinematic-touch-hint {
+  font-size: 0.85rem;
+  color: #FDE047;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+  animation: pulseTouchHint 1.8s infinite ease-in-out;
+  text-shadow: 0 0 10px rgba(253, 224, 71, 0.4);
+}
+
+@keyframes pulseTouchHint {
+  0%, 100% {
+    opacity: 0.65;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+/* Tablet & Mobile (iPhone / iPad / Android) responsiveness for Welcome & Login */
+@media (max-width: 768px) {
+  .cinematic-overlay {
+    padding: 16px 12px;
+  }
+  .cinematic-glow-title {
+    font-size: 2.2rem;
+  }
+  .cinematic-vernacular-title {
+    font-size: 1.4rem;
+  }
+  .cinematic-ring-container {
+    width: 84px;
+    height: 84px;
+    margin-bottom: 12px;
+  }
+  .cinematic-logo-badge {
+    width: 52px;
+    height: 52px;
+    font-size: 2rem;
+  }
+  .cinematic-greeting-card {
+    padding: 12px 14px;
+    margin-top: 14px;
+    gap: 12px;
+    max-width: 100%;
+  }
+  .cinematic-mascot {
+    font-size: 1.8rem;
+  }
+  .cinematic-soundwaves {
+    margin: 12px 0 10px 0;
+  }
+  .cinematic-lang-chips {
+    gap: 4px;
+    justify-content: center;
+  }
+  .cinematic-chip {
+    padding: 4px 8px;
+    font-size: 0.78rem;
+  }
+  .btn-cinematic-proceed {
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+  .auth-card {
+    padding: 20px 14px;
+    max-height: 94vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 480px) {
+  .cinematic-glow-title {
+    font-size: 1.9rem;
+  }
+  .cinematic-vernacular-title {
+    font-size: 1.25rem;
+  }
+  .cinematic-prefix {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+  }
+  .cinematic-tagline {
+    font-size: 0.8rem;
+  }
+  .btn-cinematic-proceed {
+    padding: 10px 20px;
+    font-size: 0.85rem;
+  }
 }
 
 /* ==========================================================================
@@ -3692,7 +3796,8 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .auth-demo-three {
+  .auth-demo-three,
+  .auth-demo-four {
     grid-template-columns: 1fr;
   }
 
@@ -3702,3 +3807,1568 @@ body {
     padding: 8px 12px;
   }
 }
+
+/* ==========================================================================
+   PRD SECTION 8: NEW ADVANCED STYLING (BIDIRECTIONAL, TURN-TAKING, ADMIN)
+   ========================================================================== */
+
+/* Auth Demo 4-Button Grid */
+.auth-demo-four {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.coordinator-demo {
+  border-left: 4px solid #7C3AED !important;
+}
+
+.coordinator-demo:hover {
+  background: #F5F3FF !important;
+  border-color: #7C3AED !important;
+}
+
+/* Bidirectional Voice Bridge Mode Switch */
+.bridge-mode-switch-wrap {
+  display: flex;
+  background: #F1F5F9;
+  padding: 4px;
+  border-radius: var(--radius-md);
+  gap: 6px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-subtle);
+}
+
+.bridge-mode-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.bridge-mode-btn.active {
+  background: #FFFFFF;
+  color: var(--gov-navy);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.bridge-mode-btn:hover:not(.active) {
+  color: var(--gov-navy);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* 3-Phase Visual Turn-Taking Indicator Bar (PRD FR-3.4) */
+.turn-indicator-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  margin-bottom: 12px;
+}
+
+.turn-step {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #94A3B8;
+  transition: all 0.25s ease;
+}
+
+.turn-step.active {
+  color: #0F172A;
+  font-weight: 800;
+}
+
+.turn-step .turn-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #CBD5E1;
+  display: inline-block;
+}
+
+.turn-step.active .turn-dot {
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+  animation: pulseDot 1.4s infinite;
+}
+
+.turn-arrow {
+  color: #CBD5E1;
+  font-size: 0.75rem;
+}
+
+/* Real-Time Measured E2E Latency Stopwatch & Benchmark (PRD FR-3.3) */
+.latency-benchmark-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #166534;
+  margin-top: 8px;
+}
+
+.latency-status-tag.pass {
+  background: #16A34A;
+  color: white;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+}
+
+.latency-status-tag.warn {
+  background: #F59E0B;
+  color: white;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+}
+
+/* Confidence Rating & Linguist Review Flag (PRD FR-1.4 & FR-3.6) */
+.confidence-rating-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 6px 10px;
+  background: #F8FAFC;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+}
+
+.confidence-badge-pill {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 9999px;
+}
+
+.confidence-badge-pill.high {
+  background: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+}
+
+.confidence-badge-pill.med {
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+
+.btn-flag-review {
+  background: transparent;
+  border: 1px solid #E2E8F0;
+  color: #64748B;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-flag-review:hover {
+  background: #FEF2F2;
+  border-color: #F87171;
+  color: #DC2626;
+}
+
+/* Voice Gender Selector */
+.voice-gender-select {
+  display: flex;
+  background: #FFFFFF;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gender-btn {
+  padding: 6px 10px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+}
+
+.gender-btn.active {
+  background: var(--gov-navy);
+  color: #FFFFFF;
+}
+
+/* Push to Talk Controls */
+.ptt-pill-group {
+  display: flex;
+  background: #FFFFFF;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Worksheet Customisation Controls (PRD FR-5.5) */
+.worksheet-customise-box {
+  background: #F8FAFC;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 14px;
+}
+
+.worksheet-chk-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.chk-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+}
+
+.chk-label input[type="checkbox"] {
+  accent-color: var(--gov-navy);
+}
+
+/* ==========================================================================
+   ADMIN & NATIVE LINGUIST REVIEW CONSOLE (PRD SECTION 8.4 & 8.8)
+   ========================================================================== */
+.admin-review-header {
+  background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+  color: #FFFFFF;
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.admin-review-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 8px 0 4px 0;
+  color: #FFFFFF;
+}
+
+.admin-review-header p {
+  color: #C7D2FE;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-stat-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-subtabs-nav {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid #E2E8F0;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.admin-subtab-btn {
+  padding: 10px 18px;
+  border: none;
+  background: transparent;
+  color: #64748B;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.admin-subtab-btn.active {
+  color: #4338CA;
+  border-bottom: 3px solid #4338CA;
+  background: #EEF2FF;
+}
+
+.review-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.review-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.review-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #CBD5E1;
+}
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.review-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gov-navy);
+}
+
+.review-nipun-tag {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.review-source-box {
+  background: #F8FAFC;
+  border-left: 3px solid var(--national-saffron);
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.92rem;
+  color: #1E293B;
+  margin-bottom: 14px;
+}
+
+.review-drafts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.draft-box {
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 12px;
+  background: #FAFAFA;
+}
+
+.draft-box.approved {
+  border-color: #86EFAC;
+  background: #F0FDF4;
+}
+
+.draft-box.flagged {
+  border-color: #FCA5A5;
+  background: #FEF2F2;
+}
+
+.draft-lang-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.draft-lang-name {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.draft-status-pill {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 700;
+}
+
+.draft-status-pill.approved {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.draft-status-pill.pending {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.draft-status-pill.flagged {
+  background: #FEE2E2;
+  color: #B91C1C;
+}
+
+.draft-textarea {
+  width: 100%;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  resize: vertical;
+  background: #FFFFFF;
+  font-family: inherit;
+  margin-bottom: 8px;
+}
+
+.draft-actions-row {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.btn-approve-sm {
+  background: #10B981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-flag-sm {
+  background: #EF4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.draft-reviewer-meta {
+  font-size: 0.72rem;
+  color: #64748B;
+  margin-top: 4px;
+}
+
+/* Fleet Telemetry Table */
+.fleet-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.fleet-table th {
+  background: #F1F5F9;
+  color: #334155;
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 700;
+  border-bottom: 2px solid #CBD5E1;
+}
+
+.fleet-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #E2E8F0;
+  color: #1E293B;
+}
+
+.fleet-table tr:hover {
+  background: #F8FAFC;
+}
+
+.fleet-badge-synced {
+  background: #DCFCE7;
+  color: #15803D;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.fleet-badge-pending {
+  background: #FEF3C7;
+  color: #B45309;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+/* ======================================================================
+   PRD FR-7.4: WORKSHEET & FLASHCARD LIBRARY STYLES
+   ====================================================================== */
+
+.ws-library-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.ws-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #F8FAFC;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 12px;
+  padding: 8px 14px;
+  transition: border-color 0.2s;
+}
+
+.ws-search-wrap:focus-within {
+  border-color: var(--primary-blue);
+}
+
+.ws-search-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.ws-search-input {
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  width: 100%;
+  outline: none;
+  color: #1E293B;
+  font-family: var(--font-body);
+}
+
+.ws-filter-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.ws-type-pills {
+  display: flex;
+  gap: 6px;
+}
+
+.ws-type-pill {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 1.5px solid #CBD5E1;
+  background: white;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-body);
+  color: #475569;
+}
+
+.ws-type-pill.active,
+.ws-type-pill:hover {
+  background: var(--primary-blue);
+  color: white;
+  border-color: var(--primary-blue);
+}
+
+.ws-library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.ws-library-card {
+  background: white;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 16px;
+  transition: all 0.25s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.ws-library-card:hover {
+  border-color: var(--primary-blue);
+  box-shadow: 0 4px 20px rgba(11, 37, 69, 0.12);
+  transform: translateY(-2px);
+}
+
+.ws-library-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-blue), var(--primary-teal));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ws-library-card:hover::before {
+  opacity: 1;
+}
+
+.ws-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.ws-card-type-badge {
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.ws-card-type-badge.worksheet {
+  background: #E0E7FF;
+  color: #3730A3;
+}
+
+.ws-card-type-badge.flashcard {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.ws-card-emoji {
+  font-size: 1.8rem;
+}
+
+.ws-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0B2545;
+  margin-bottom: 4px;
+}
+
+.ws-card-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.ws-card-tag {
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: #F1F5F9;
+  color: #475569;
+}
+
+.ws-card-outcome {
+  font-size: 0.78rem;
+  color: var(--fln-emerald);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.ws-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.ws-card-btn {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #CBD5E1;
+  background: white;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-body);
+  color: #334155;
+}
+
+.ws-card-btn.primary {
+  background: var(--primary-blue);
+  color: white;
+  border-color: var(--primary-blue);
+}
+
+.ws-card-btn:hover {
+  border-color: var(--primary-blue);
+  color: var(--primary-blue);
+}
+
+.ws-card-btn.primary:hover {
+  background: #0A1F3D;
+  color: white;
+}
+
+.ws-library-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+
+.ws-library-empty p {
+  font-size: 0.95rem;
+  margin-top: 10px;
+}
+
+/* ======================================================================
+   PRD FR-4.3: CONTENT VERSION HISTORY STYLES
+   ====================================================================== */
+
+.version-history-panel {
+  margin-top: 24px;
+  padding: 18px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+}
+
+.version-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.version-history-header h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0B2545;
+  margin: 0;
+}
+
+.version-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+}
+
+.btn-version-rollback {
+  padding: 5px 12px;
+  border-radius: 7px;
+  border: 1.5px solid #F59E0B;
+  background: #FEF3C7;
+  color: #B45309;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-body);
+}
+
+.btn-version-rollback:hover {
+  background: #F59E0B;
+  color: white;
+}
+
+/* ======================================================================
+   PRD FR-1.5: INCREMENTAL CORPUS STATS STYLES
+   ====================================================================== */
+
+.corpus-stats-banner {
+  background: linear-gradient(135deg, #0B2545 0%, #134074 100%);
+  border-radius: 14px;
+  padding: 18px 20px;
+  color: white;
+  margin-bottom: 0;
+}
+
+.corpus-stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.corpus-stats-header h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.corpus-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.corpus-stat-item {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.corpus-stat-num {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: white;
+  font-family: var(--font-display);
+}
+
+.corpus-stat-lbl {
+  display: block;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.75);
+  margin-top: 3px;
+}
+
+.corpus-langs-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.corpus-lang-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.9);
+}
+
+.corpus-lang-bar span:first-child {
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.corpus-lang-bar span:last-child {
+  width: 40px;
+  text-align: right;
+  font-weight: 700;
+}
+
+.corpus-bar-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.corpus-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.8s ease;
+}
+
+/* ======================================================================
+   PRD SECTION 13: KPI DASHBOARD STYLES
+   ====================================================================== */
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.kpi-card {
+  border-radius: 14px;
+  padding: 16px;
+  border: 1.5px solid #E2E8F0;
+  background: white;
+  transition: box-shadow 0.2s;
+}
+
+.kpi-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.kpi-card.kpi-pass {
+  border-left: 4px solid #10B981;
+}
+
+.kpi-card.kpi-warn {
+  border-left: 4px solid #F59E0B;
+}
+
+.kpi-card.kpi-fail {
+  border-left: 4px solid #EF4444;
+}
+
+.kpi-header {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.kpi-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.kpi-header > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kpi-header > div strong {
+  font-size: 0.9rem;
+  color: #0B2545;
+}
+
+.kpi-target {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.kpi-status-badge {
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.kpi-status-badge.pass {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.kpi-status-badge.warn {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.kpi-status-badge.fail {
+  background: #FEE2E2;
+  color: #B91C1C;
+}
+
+.kpi-value {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0B2545;
+  margin-bottom: 8px;
+  font-family: var(--font-display);
+}
+
+.kpi-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.kpi-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 1s ease;
+}
+
+.kpi-detail {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.kpi-legend-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 12px 0 0 0;
+  border-top: 1px solid #E2E8F0;
+}
+
+.kpi-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #475569;
+  font-weight: 600;
+}
+
+.kpi-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ======================================================================
+   CHILD-INTERACTIVE & MOBILE APP STYLES (MASCOT, SOUND GAME, BOTTOM NAV)
+   ====================================================================== */
+
+/* 1. Floating Animated Mascot Gajju Bhai Widget */
+.mascot-floating-widget {
+  position: fixed;
+  bottom: 84px;
+  right: 20px;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.mascot-bubble {
+  pointer-events: auto;
+  background: #FFFFFF;
+  color: #1E293B;
+  border: 2px solid #F59E0B;
+  border-radius: 18px 18px 4px 18px;
+  padding: 10px 14px;
+  font-family: var(--font-friendly, 'Fredoka', sans-serif);
+  font-size: 0.88rem;
+  font-weight: 600;
+  max-width: 240px;
+  margin-bottom: 10px;
+  box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.35);
+  position: relative;
+  animation: bubblePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  line-height: 1.4;
+}
+
+.bubble-close-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #EF4444;
+  color: #FFFFFF;
+  border: none;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascot-avatar-circle {
+  pointer-events: auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%);
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.45);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: mascotFloat 3s ease-in-out infinite;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mascot-avatar-circle:hover {
+  transform: scale(1.1) rotate(4deg);
+}
+
+.mascot-avatar-circle:active {
+  transform: scale(0.92);
+}
+
+.mascot-emoji {
+  font-size: 32px;
+  line-height: 1;
+  user-select: none;
+}
+
+.mascot-star-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -6px;
+  background: #0284C7;
+  color: #FFFFFF;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  border: 1.5px solid #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes mascotFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes bubblePop {
+  0% { opacity: 0; transform: scale(0.8) translateY(10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* 2. Kids Interactive Discovery Sound Game ("सुनो और पहचानो") */
+.kids-game-box {
+  margin-top: 32px;
+  background: linear-gradient(180deg, #FFFBEB 0%, #FEF3C7 100%);
+  border: 3px dashed #F59E0B;
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 12px 28px -6px rgba(245, 158, 11, 0.25);
+}
+
+.kids-game-box .game-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.kids-game-box .game-badge {
+  display: inline-block;
+  background: #F59E0B;
+  color: #FFFFFF;
+  font-family: var(--font-friendly, 'Fredoka', sans-serif);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.game-question-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 2px solid #FDE68A;
+  border-radius: 16px;
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.game-prompt-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1E3A8A;
+  font-family: var(--font-friendly, 'Fredoka', sans-serif);
+}
+
+.btn-game-listen {
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  transition: transform 0.15s ease;
+}
+
+.btn-game-listen:active {
+  transform: scale(0.95);
+}
+
+.game-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 768px) {
+  .game-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.game-card-btn {
+  background: #FFFFFF;
+  border: 3px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+  user-select: none;
+}
+
+.game-card-btn:hover {
+  transform: translateY(-5px);
+  border-color: #38BDF8;
+  box-shadow: 0 12px 24px -4px rgba(56, 189, 248, 0.35);
+}
+
+.game-card-btn:active {
+  transform: scale(0.94);
+}
+
+.game-card-btn .card-icon {
+  font-size: 2.8rem;
+  margin-bottom: 8px;
+}
+
+.game-card-btn .card-vernacular {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.game-card-btn .card-meaning {
+  font-size: 0.8rem;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.game-card-btn.correct {
+  border-color: #10B981 !important;
+  background: #ECFDF5 !important;
+  animation: correctBounce 0.5s ease;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3) !important;
+}
+
+.game-card-btn.wrong {
+  border-color: #EF4444 !important;
+  background: #FEF2F2 !important;
+  animation: wrongWiggle 0.4s ease;
+}
+
+@keyframes correctBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes wrongWiggle {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.game-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.game-streak-pill {
+  background: #FFFFFF;
+  border: 1.5px solid #FDE68A;
+  border-radius: 9999px;
+  padding: 6px 16px;
+  font-size: 0.86rem;
+  color: #92400E;
+  font-weight: 600;
+}
+
+.btn-game-next {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 18px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  transition: transform 0.15s ease;
+}
+
+.btn-game-next:active {
+  transform: scale(0.95);
+}
+
+/* 3. Mobile Bottom Navigation Bar (< 860px) */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1040;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid #E2E8F0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  padding: 0 8px;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.mobile-nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 0;
+  gap: 2px;
+}
+
+.mobile-nav-btn .mob-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.mobile-nav-btn .mob-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.mobile-nav-btn.active {
+  color: #0284C7;
+}
+
+.mobile-nav-btn.active .mob-icon {
+  transform: scale(1.15) translateY(-2px);
+}
+
+.mobile-nav-btn.active .mob-label {
+  color: #0284C7;
+  font-weight: 800;
+}
+
+@media (max-width: 860px) {
+  .mobile-bottom-nav {
+    display: flex;
+  }
+  body {
+    padding-bottom: 76px !important;
+  }
+  .mascot-floating-widget {
+    bottom: 74px;
+    right: 14px;
+  }
+}
+
+/* Streamlined Single Top Navbar (Eliminates bulky stacked headers) */
+.app-top-nav {
+  background: var(--gov-navy);
+  color: #FFFFFF;
+  padding: 10px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  border-bottom: 2px solid var(--national-saffron);
+}
+
+.top-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.top-brand-logo {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--national-saffron), #FFB703);
+  color: #FFFFFF;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.top-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-brand-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.top-brand-title span {
+  font-weight: 500;
+  color: #E2E8F0;
+  font-size: 0.92rem;
+}
+
+.top-brand-badge {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.top-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Space-Saving Clean & Attractive Footer */
+.app-footer {
+  background: var(--surface-white);
+  border-top: 1px solid var(--border-subtle);
+  padding: 14px 24px;
+  margin-top: 36px;
+}
+
+.footer-content-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.footer-bullet {
+  opacity: 0.35;
+  margin: 0 4px;
+}
+
+.footer-policy-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.policy-pill-btn {
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.policy-pill-btn:hover {
+  background: #E2E8F0;
+  color: var(--gov-navy);
+  border-color: #CBD5E1;
+}
+
+.policy-card {
+  max-width: 540px !important;
+  text-align: left;
+}
+
+.policy-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.policy-modal-header h3 {
+  font-size: 1.05rem;
+  color: var(--gov-navy);
+  margin: 0;
+}
+
+.policy-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.policy-modal-body {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #334155;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.policy-modal-footer {
+  margin-top: 14px;
+  text-align: right;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px;
+}
+
+
+

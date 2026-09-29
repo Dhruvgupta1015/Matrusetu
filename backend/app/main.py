@@ -69,7 +69,10 @@ app.add_middleware(
 
 @app.on_event("startup")
 def on_startup():
-    init_db()
+    try:
+        init_db()
+    except Exception as e:
+        print(f"Warning: Database initialization skipped or deferred: {e}")
 
 # Mount PRD v3.0 REST API contract under /api/v1
 app.include_router(auth_router, prefix="/api/v1")

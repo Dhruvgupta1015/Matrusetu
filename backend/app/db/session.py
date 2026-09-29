@@ -6,7 +6,10 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL or "postgresql://user:password" in DATABASE_URL:
-    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "matrubhasa.db"))
+    if os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
+        db_path = "/tmp/matrubhasa.db"
+    else:
+        db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "matrubhasa.db"))
     DATABASE_URL = f"sqlite:///{db_path}"
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 else:

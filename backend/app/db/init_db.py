@@ -224,7 +224,6 @@ def init_db():
     except Exception as e:
         db.rollback()
         print(f"Error seeding database: {e}")
-        raise e
     finally:
         db.close()
 
